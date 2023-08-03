@@ -2762,7 +2762,7 @@
     (uuid 15865352-5579-4282-b1c7-2105bb4ed42c)
     (property "Reference" "J1" (id 0) (at 242.57 49.53 90))
     (property "Value" "LED RGBW Connector" (id 1) (at 242.57 52.07 90))
-    (property "Footprint" "Connector_JST:JST_VH_B5P-VH-B_1x05_P3.96mm_Vertical" (id 2) (at 242.57 55.88 0)
+    (property "Footprint" "Connector_JST:JST_PH_B5B-PH-K_1x05_P2.00mm_Vertical" (id 2) (at 242.57 55.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 242.57 55.88 0)
@@ -2885,7 +2885,7 @@
     (property "Value" "Power Header" (id 1) (at 74.93 16.51 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_JST:JST_VH_B2P-VH-B_1x02_P3.96mm_Vertical" (id 2) (at 76.2 19.05 0)
+    (property "Footprint" "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical" (id 2) (at 76.2 19.05 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 76.2 19.05 0)
@@ -3187,7 +3187,7 @@
     (property "Value" "Boot mode" (id 1) (at 154.94 53.34 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_JST:JST_VH_B2P-VH-B_1x02_P3.96mm_Vertical" (id 2) (at 156.21 55.88 0)
+    (property "Footprint" "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" (id 2) (at 156.21 55.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 156.21 55.88 0)
@@ -3439,7 +3439,7 @@
   (symbol (lib_id "power:GNDREF") (at 158.75 60.96 0) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid 7c1a64b2-f65e-48bc-8db2-3494c0716c90)
-    (property "Reference" "#PWR?" (id 0) (at 158.75 67.31 0)
+    (property "Reference" "#PWR0108" (id 0) (at 158.75 67.31 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GNDREF" (id 1) (at 161.29 64.77 0))
@@ -3492,7 +3492,7 @@
     (uuid 8053d7a9-b591-4fcc-92bc-dac28827855b)
     (property "Reference" "J2" (id 0) (at 44.45 93.98 0))
     (property "Value" "USB to UART" (id 1) (at 44.45 96.52 0))
-    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x03_P1.00mm_Vertical" (id 2) (at 44.45 102.87 0)
+    (property "Footprint" "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical" (id 2) (at 44.45 102.87 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 44.45 102.87 0)
@@ -3913,7 +3913,7 @@
     (property "Value" "Motor Connector" (id 1) (at 135.89 172.72 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_JST:JST_VH_B2P-VH-B_1x02_P3.96mm_Vertical" (id 2) (at 137.16 175.26 0)
+    (property "Footprint" "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" (id 2) (at 137.16 175.26 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 137.16 175.26 0)
@@ -4103,7 +4103,7 @@
     (property "Value" "Projector Connector" (id 1) (at 72.39 175.26 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_JST:JST_VH_B2P-VH-B_1x02_P3.96mm_Vertical" (id 2) (at 73.66 177.8 0)
+    (property "Footprint" "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" (id 2) (at 73.66 177.8 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 73.66 177.8 0)
@@ -4378,6 +4378,9 @@
     (path "/1ff624f2-93d8-4500-bca2-dfc323634b5a"
       (reference "#PWR0107") (unit 1) (value "GNDREF") (footprint "")
     )
+    (path "/7c1a64b2-f65e-48bc-8db2-3494c0716c90"
+      (reference "#PWR0108") (unit 1) (value "GNDREF") (footprint "")
+    )
     (path "/6223c83c-20ba-4c5d-a67d-4d5520b15751"
       (reference "#PWR0109") (unit 1) (value "GNDREF") (footprint "")
     )
@@ -4447,9 +4450,6 @@
     (path "/7864a6a3-9973-4e3d-ae42-feafce0c96fd"
       (reference "#PWR0135") (unit 1) (value "GNDREF") (footprint "")
     )
-    (path "/7c1a64b2-f65e-48bc-8db2-3494c0716c90"
-      (reference "#PWR?") (unit 1) (value "GNDREF") (footprint "")
-    )
     (path "/f4c52e4c-8f04-4b7c-b2ab-c31362cd5052"
       (reference "C2") (unit 1) (value "1uF") (footprint "Capacitor_THT:CP_Radial_D4.0mm_P1.50mm")
     )
@@ -4484,25 +4484,25 @@
       (reference "D3") (unit 1) (value "1N5817") (footprint "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal")
     )
     (path "/15865352-5579-4282-b1c7-2105bb4ed42c"
-      (reference "J1") (unit 1) (value "LED RGBW Connector") (footprint "Connector_JST:JST_VH_B5P-VH-B_1x05_P3.96mm_Vertical")
+      (reference "J1") (unit 1) (value "LED RGBW Connector") (footprint "Connector_JST:JST_PH_B5B-PH-K_1x05_P2.00mm_Vertical")
     )
     (path "/8053d7a9-b591-4fcc-92bc-dac28827855b"
-      (reference "J2") (unit 1) (value "USB to UART") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x03_P1.00mm_Vertical")
+      (reference "J2") (unit 1) (value "USB to UART") (footprint "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical")
     )
     (path "/b966e064-33c4-411a-9b47-10b81f480fe0"
-      (reference "J3") (unit 1) (value "Motor Connector") (footprint "Connector_JST:JST_VH_B2P-VH-B_1x02_P3.96mm_Vertical")
+      (reference "J3") (unit 1) (value "Motor Connector") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
     )
     (path "/d0bd552a-bfa0-4f1f-b5c2-ee2ac8ffb873"
-      (reference "J4") (unit 1) (value "Projector Connector") (footprint "Connector_JST:JST_VH_B2P-VH-B_1x02_P3.96mm_Vertical")
+      (reference "J4") (unit 1) (value "Projector Connector") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
     )
     (path "/26105e9f-622e-495f-87a9-ce05bc82d4a7"
       (reference "J5") (unit 1) (value "Debug Header") (footprint "Connector_JST:JST_PH_B16B-PH-K_1x16_P2.00mm_Vertical")
     )
     (path "/236aaded-fe8f-4d86-b554-49801134b45a"
-      (reference "J6") (unit 1) (value "Power Header") (footprint "Connector_JST:JST_VH_B2P-VH-B_1x02_P3.96mm_Vertical")
+      (reference "J6") (unit 1) (value "Power Header") (footprint "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical")
     )
     (path "/60a99428-90c5-4a9b-80ba-bf6e39664bb4"
-      (reference "J7") (unit 1) (value "Boot mode") (footprint "Connector_JST:JST_VH_B2P-VH-B_1x02_P3.96mm_Vertical")
+      (reference "J7") (unit 1) (value "Boot mode") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
     )
     (path "/b00305ca-f0d0-4bad-8534-aa8251ff47b4"
       (reference "Q1") (unit 1) (value "IRLML0030") (footprint "Package_TO_SOT_SMD:SOT-23")
