@@ -2885,7 +2885,7 @@
     (property "Value" "Power Header" (id 1) (at 74.93 16.51 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical" (id 2) (at 76.2 19.05 0)
+    (property "Footprint" "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" (id 2) (at 76.2 19.05 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 76.2 19.05 0)
@@ -4499,7 +4499,7 @@
       (reference "J5") (unit 1) (value "Debug Header") (footprint "Connector_JST:JST_PH_B16B-PH-K_1x16_P2.00mm_Vertical")
     )
     (path "/236aaded-fe8f-4d86-b554-49801134b45a"
-      (reference "J6") (unit 1) (value "Power Header") (footprint "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical")
+      (reference "J6") (unit 1) (value "Power Header") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
     )
     (path "/60a99428-90c5-4a9b-80ba-bf6e39664bb4"
       (reference "J7") (unit 1) (value "Boot mode") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
