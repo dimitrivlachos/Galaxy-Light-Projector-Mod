@@ -2250,7 +2250,7 @@
 
   (footprint "Package_TO_SOT_SMD:SOT-23" (layer "F.Cu")
     (tedit 5FA16958) (tstamp dc0de6a5-e34d-466d-82cf-d112f4526cf1)
-    (at 98.0625 58)
+    (at 114 64)
     (descr "SOT, 3 Pin (https://www.jedec.org/system/files/docs/to-236h.pdf variant AB), generated with kicad-footprint-generator ipc_gullwing_generator.py")
     (tags "SOT TO_SOT_SMD")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -3600,6 +3600,8 @@
   (via (at 155 55) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (net 11) (tstamp d6e3c3de-11c2-4bb9-a9e8-cf6772cc5671))
   (segment (start 157 54) (end 157 55) (width 0.5) (layer "F.Cu") (net 12) (tstamp 907e133a-d050-47f8-92ba-a462282c7f36))
   (via (at 157 55) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (net 12) (tstamp cac83dd1-614d-4025-bad0-fa92525f2bca))
+  (segment (start 113 65.0125) (end 113.0625 64.95) (width 0.5) (layer "F.Cu") (net 15) (tstamp 4c2258c2-1ee1-4887-9b7f-5d0982906f92))
+  (segment (start 113 67) (end 113 65.0125) (width 0.5) (layer "F.Cu") (net 15) (tstamp 64882ff6-b75e-493c-9347-58c3b35f25e3))
   (segment (start 162 65) (end 163 66) (width 0.5) (layer "B.Cu") (net 17) (tstamp 11c0838d-3b11-4ad7-9b8e-644f369c7394))
   (segment (start 162 64) (end 162 65) (width 0.5) (layer "B.Cu") (net 17) (tstamp 292f5816-cb30-47ae-b6ed-cc075cf437c8))
   (segment (start 163 66) (end 164 66) (width 0.5) (layer "B.Cu") (net 17) (tstamp e123a3dd-5d3c-4e9a-afc0-87afdd5afe20))
