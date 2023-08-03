@@ -366,7 +366,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "F.Cu")
     (tedit 5F68FEEE) (tstamp 1446771f-69f8-4b3b-b372-f7610a330107)
-    (at 139.7 86.36 90)
+    (at 137.16 55.88 90)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -665,7 +665,7 @@
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
     (tedit 5F68FEEE) (tstamp 2fb027d4-c6eb-4929-a091-182cd3de4a73)
-    (at 121.92 78.74 -90)
+    (at 124.46 55.88 -90)
     (descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
     (tags "capacitor")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -707,7 +707,7 @@
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
     (tedit 5F68FEEE) (tstamp 329f8f45-d5bf-486a-925f-118242dfa893)
-    (at 157.48 78.74 -90)
+    (at 147.32 55.88 -90)
     (descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
     (tags "capacitor")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -936,7 +936,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "F.Cu")
     (tedit 5F68FEEE) (tstamp 4427bcaf-5cca-408a-85d0-fa1df239d443)
-    (at 175.26 86.36 90)
+    (at 160.02 60.96 90)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1025,7 +1025,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "F.Cu")
     (tedit 5F68FEEE) (tstamp 5347b0d8-4d39-4aad-ad8a-bc1dc2a32f90)
-    (at 121.92 86.36 90)
+    (at 124.46 63.5 90)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1165,7 +1165,7 @@
 
   (footprint "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm" (layer "F.Cu")
     (tedit 5CA1CA7F) (tstamp 634b0734-3b8d-4a37-9618-92258cada602)
-    (at 149.86 78.74)
+    (at 149.86 63.5)
     (descr "tactile push button, 6x6mm e.g. PTS645xx series, height=9.5mm")
     (tags "tact sw push 6mm smd")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1583,7 +1583,7 @@
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
     (tedit 5F68FEEE) (tstamp 7b87c3f1-dab4-4785-b45f-07597490f86a)
-    (at 139.7 78.74 -90)
+    (at 132.08 55.88 -90)
     (descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
     (tags "capacitor")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1709,7 +1709,7 @@
 
   (footprint "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm" (layer "F.Cu")
     (tedit 5CA1CA7F) (tstamp 7e676ccb-bbc9-401a-92a8-b92afa1b72f7)
-    (at 167.64 78.74)
+    (at 167.64 55.88)
     (descr "tactile push button, 6x6mm e.g. PTS645xx series, height=9.5mm")
     (tags "tact sw push 6mm smd")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -2362,7 +2362,7 @@
 
   (footprint "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm" (layer "F.Cu")
     (tedit 5CA1CA7F) (tstamp b77e9aa6-5fbb-4b04-91de-f42e6844b593)
-    (at 114.3 78.74)
+    (at 116.84 55.88)
     (descr "tactile push button, 6x6mm e.g. PTS645xx series, height=9.5mm")
     (tags "tact sw push 6mm smd")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -2541,7 +2541,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "F.Cu")
     (tedit 5F68FEEE) (tstamp cd4918fc-6336-413f-a536-1dad7910eedc)
-    (at 157.48 86.36 90)
+    (at 152.4 55.88 90)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -3040,7 +3040,7 @@
 
   (footprint "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm" (layer "F.Cu")
     (tedit 5CA1CA7F) (tstamp eabdca54-98bf-4355-93ce-c8b08ce7521b)
-    (at 132.08 78.74)
+    (at 134.62 63.5)
     (descr "tactile push button, 6x6mm e.g. PTS645xx series, height=9.5mm")
     (tags "tact sw push 6mm smd")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -3135,7 +3135,7 @@
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
     (tedit 5F68FEEE) (tstamp f8d5d8ae-a3bb-4e1e-afc9-3a44c5caa3b7)
-    (at 175.26 78.74 -90)
+    (at 160.02 55.88 -90)
     (descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
     (tags "capacitor")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -3392,5 +3392,16 @@
       (rotate (xyz 0 0 0))
     )
   )
+
+  (gr_line (start 121.92 88.9) (end 121.92 78.74) (layer "Edge.Cuts") (width 0.1) (tstamp 0cdc3a9a-50e0-48fb-9e02-580142195838))
+  (gr_arc (start 114.3 71.12) (mid 119.688154 73.351846) (end 121.92 78.74) (layer "Edge.Cuts") (width 0.1) (tstamp 6d4717bc-e5c8-468f-bfc0-3a09dc39f0fc))
+  (gr_line (start 173.99 50.8) (end 110.49 50.8) (layer "Edge.Cuts") (width 0.1) (tstamp 70da81dd-2a7f-4e2c-99c4-6a4d264c3a5c))
+  (gr_line (start 110.49 50.8) (end 110.49 71.12) (layer "Edge.Cuts") (width 0.1) (tstamp 7493cdee-ceb1-4e64-afc8-d95d7e1195ff))
+  (gr_line (start 170.18 66.04) (end 160.02 73.66) (layer "Edge.Cuts") (width 0.1) (tstamp bd896e51-1886-4919-9801-0ca61b638e5d))
+  (gr_line (start 160.02 73.66) (end 160.02 88.9) (layer "Edge.Cuts") (width 0.1) (tstamp d31df0e0-1d9f-46da-9d70-45746692b03b))
+  (gr_line (start 173.99 66.04) (end 170.18 66.04) (layer "Edge.Cuts") (width 0.1) (tstamp d5a87fab-6f96-4d55-bd4a-2f8bf53c7fd9))
+  (gr_line (start 160.02 88.9) (end 121.92 88.9) (layer "Edge.Cuts") (width 0.1) (tstamp f10986eb-d9ae-44f6-9569-b69e5c7ef110))
+  (gr_line (start 173.99 50.8) (end 173.99 66.04) (layer "Edge.Cuts") (width 0.1) (tstamp f22896a5-1f0d-49b1-8db3-ce1615fec45d))
+  (gr_line (start 114.3 71.12) (end 110.49 71.12) (layer "Edge.Cuts") (width 0.1) (tstamp f7a343e8-478d-456e-be2b-e6761720d483))
 
 )
