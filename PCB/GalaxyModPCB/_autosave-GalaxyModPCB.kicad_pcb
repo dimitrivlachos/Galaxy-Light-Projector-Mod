@@ -1265,7 +1265,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp 08c655ed-40f3-4c76-8cfb-82f4bb884fa6)
-    (at 162 60)
+    (at 179 59)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1307,7 +1307,7 @@
 
   (footprint "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp 0c5428b4-8209-4bfd-8fed-b9e4a7e3a218)
-    (at 157 81 180)
+    (at 155 79 180)
     (descr "Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1391,7 +1391,7 @@
 
   (footprint "Package_TO_SOT_SMD:SOT-23" (layer "B.Cu")
     (tedit 5FA16958) (tstamp 1e2d9beb-f3c8-44be-94c9-728346889331)
-    (at 166 59)
+    (at 183 58)
     (descr "SOT, 3 Pin (https://www.jedec.org/system/files/docs/to-236h.pdf variant AB), generated with kicad-footprint-generator ipc_gullwing_generator.py")
     (tags "SOT TO_SOT_SMD")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1438,7 +1438,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp 24809d7f-a12a-41cb-8572-54ddb7111e61)
-    (at 149 74)
+    (at 178 75)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1631,7 +1631,7 @@
 
   (footprint "Package_TO_SOT_SMD:SOT-23" (layer "B.Cu")
     (tedit 5FA16958) (tstamp 3866adf9-0388-4380-9ed0-6850384af1c2)
-    (at 153 73)
+    (at 182 74)
     (descr "SOT, 3 Pin (https://www.jedec.org/system/files/docs/to-236h.pdf variant AB), generated with kicad-footprint-generator ipc_gullwing_generator.py")
     (tags "SOT TO_SOT_SMD")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1720,7 +1720,7 @@
 
   (footprint "Package_TO_SOT_SMD:SOT-23" (layer "B.Cu")
     (tedit 5FA16958) (tstamp 4594d99b-5be0-44fb-b512-37b3cc5b9ed1)
-    (at 154 65)
+    (at 181 66)
     (descr "SOT, 3 Pin (https://www.jedec.org/system/files/docs/to-236h.pdf variant AB), generated with kicad-footprint-generator ipc_gullwing_generator.py")
     (tags "SOT TO_SOT_SMD")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1834,7 +1834,7 @@
 
   (footprint "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp 5dbbac14-a834-4df1-b727-d4a032d4d7f5)
-    (at 157 77 180)
+    (at 155 75 180)
     (descr "Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1918,7 +1918,7 @@
 
   (footprint "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp 64f7c128-db0b-4a25-9d7a-bcd17bc03c45)
-    (at 157 79 180)
+    (at 155 77 180)
     (descr "Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -1960,7 +1960,7 @@
 
   (footprint "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp 694e684c-657d-490d-b5bc-826f87527f07)
-    (at 159 64 180)
+    (at 155 64 180)
     (descr "Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -2075,7 +2075,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp 6f4326c1-2800-40fd-9932-24de32e9cf00)
-    (at 149 72 180)
+    (at 178 73 180)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -2202,7 +2202,7 @@
 
   (footprint "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp 75c1242b-a7df-4385-9539-467359c549f2)
-    (at 159 68 180)
+    (at 155 68 180)
     (descr "Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -2244,7 +2244,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp 7d0d458b-a010-49e0-a068-28834dd9fa74)
-    (at 150.0625 63.95 180)
+    (at 177.0625 64.95 180)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -2506,7 +2506,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp 8ec580d9-2584-4c3d-ba8a-6bd03fd80149)
-    (at 145.253928 80)
+    (at 179.253928 82)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -2590,7 +2590,7 @@
 
   (footprint "Package_TO_SOT_SMD:SOT-23" (layer "B.Cu")
     (tedit 5FA16958) (tstamp 9dcc9a42-e17d-422c-bdc9-094ba50838a6)
-    (at 149 79)
+    (at 183 81)
     (descr "SOT, 3 Pin (https://www.jedec.org/system/files/docs/to-236h.pdf variant AB), generated with kicad-footprint-generator ipc_gullwing_generator.py")
     (tags "SOT TO_SOT_SMD")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -2704,7 +2704,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp a8eaa07a-e47a-452b-868d-d666b93388bf)
-    (at 150.0625 65.95)
+    (at 177.0625 66.95)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -2813,7 +2813,7 @@
 
   (footprint "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp b2af7e3b-9979-4725-8358-10476d5617ac)
-    (at 159 70 180)
+    (at 155 70 180)
     (descr "Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -2855,7 +2855,7 @@
 
   (footprint "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp bb16cd11-1385-4174-8e79-15102ca31e31)
-    (at 159 66 180)
+    (at 155 66 180)
     (descr "Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -2939,7 +2939,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp c9ae4c58-73bc-45f3-bf4e-6aa851317f90)
-    (at 145.253928 78 180)
+    (at 179.253928 80 180)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -3023,7 +3023,7 @@
 
   (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp d2dbbf70-aabb-4d5f-9994-5222dcb9503e)
-    (at 162 58 180)
+    (at 179 57 180)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -3065,7 +3065,7 @@
 
   (footprint "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" (layer "B.Cu")
     (tedit 5F68FEEE) (tstamp d6c7b611-9689-46c1-8522-e1fa095bca5a)
-    (at 157 75 180)
+    (at 155 73 180)
     (descr "Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (property "Sheetfile" "File: GalaxyModPCB.kicad_sch")
@@ -3643,6 +3643,15 @@
   (via (at 155 55) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (net 11) (tstamp d6e3c3de-11c2-4bb9-a9e8-cf6772cc5671))
   (segment (start 157 54) (end 157 55) (width 0.5) (layer "F.Cu") (net 12) (tstamp 907e133a-d050-47f8-92ba-a462282c7f36))
   (via (at 157 55) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (net 12) (tstamp cac83dd1-614d-4025-bad0-fa92525f2bca))
+  (segment (start 159 78.564949) (end 159 73) (width 0.5) (layer "B.Cu") (net 12) (tstamp 13b19f27-5efb-4d4c-8f8a-6fd06fe7123f))
+  (segment (start 159 73) (end 161 71) (width 0.5) (layer "B.Cu") (net 12) (tstamp 3193dfa9-92b1-4238-acc2-c78eabaef0a5))
+  (segment (start 151.55 86) (end 151.55 84) (width 0.5) (layer "B.Cu") (net 12) (tstamp 397ae78e-ac7e-4902-9587-60a4403163a4))
+  (segment (start 161 71) (end 161 59) (width 0.5) (layer "B.Cu") (net 12) (tstamp 85465f2a-c3bc-4cc7-8b27-7b265ce6db10))
+  (segment (start 161 59) (end 157 55) (width 0.5) (layer "B.Cu") (net 12) (tstamp a285cf22-6877-45ad-b241-e0a028166bc5))
+  (segment (start 155.564949 82) (end 159 78.564949) (width 0.5) (layer "B.Cu") (net 12) (tstamp c61ffdc6-95e7-49cb-8246-5660bca77821))
+  (segment (start 151.55 88) (end 151.55 86) (width 0.5) (layer "B.Cu") (net 12) (tstamp cc36b99b-fe61-4bb8-ad39-f4609f8c1fa1))
+  (segment (start 151.55 82) (end 155.564949 82) (width 0.5) (layer "B.Cu") (net 12) (tstamp e19b7910-535c-4db8-9f50-440083c5f411))
+  (segment (start 151.55 84) (end 151.55 82) (width 0.5) (layer "B.Cu") (net 12) (tstamp f2bf0b1a-5b3e-4a1a-93e7-b374ac5a4277))
   (segment (start 113 67) (end 113 65) (width 0.5) (layer "F.Cu") (net 15) (tstamp 2c9d5e9b-5d4e-4b53-b22e-325f6b17bf2e))
   (segment (start 116 58) (end 116 61) (width 0.5) (layer "B.Cu") (net 16) (tstamp af567259-c75f-4c6f-a9ae-89748ede1fec))
   (segment (start 164 66) (end 164 63) (width 0.5) (layer "B.Cu") (net 17) (tstamp 50b7f595-ff0a-4d29-a98b-8f32c5856e02))
