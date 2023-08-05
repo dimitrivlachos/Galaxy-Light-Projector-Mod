@@ -3286,7 +3286,7 @@
     (property "Value" "Motor" (id 1) (at 140.97 189.23 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Diode_SMD:D_0805_2012Metric_Pad1.15x1.40mm_HandSolder" (id 2) (at 138.43 194.31 0)
+    (property "Footprint" "Diode_SMD:D_SMA_Handsoldering" (id 2) (at 138.43 194.31 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 138.43 194.31 0)
@@ -3617,7 +3617,7 @@
     (property "Value" "RVP Diode" (id 1) (at 63.5 30.48 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Diode_SMD:D_0805_2012Metric_Pad1.15x1.40mm_HandSolder" (id 2) (at 76.2 29.21 0)
+    (property "Footprint" "Diode_SMD:D_SMA_Handsoldering" (id 2) (at 76.2 29.21 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 76.2 29.21 0)
@@ -3889,13 +3889,13 @@
       (reference "C10") (unit 1) (value "0.1uF") (footprint "Capacitor_SMD:C_0805_2012Metric")
     )
     (path "/efc17c54-3240-40f4-ab40-6c297d686c7c"
-      (reference "D1") (unit 1) (value "RVP Diode") (footprint "Diode_SMD:D_0805_2012Metric_Pad1.15x1.40mm_HandSolder")
+      (reference "D1") (unit 1) (value "RVP Diode") (footprint "Diode_SMD:D_SMA_Handsoldering")
     )
     (path "/dd7f5c67-48b1-4411-b6b0-95c022f09402"
       (reference "D2") (unit 1) (value "LED") (footprint "LED_SMD:LED_0805_2012Metric")
     )
     (path "/b2da1734-3d24-417f-9434-39423f6151c2"
-      (reference "D3") (unit 1) (value "Motor") (footprint "Diode_SMD:D_0805_2012Metric_Pad1.15x1.40mm_HandSolder")
+      (reference "D3") (unit 1) (value "Motor") (footprint "Diode_SMD:D_SMA_Handsoldering")
     )
     (path "/9c814a5f-1e26-4b32-8e4a-3bff32939361"
       (reference "H1") (unit 1) (value "MountingHole") (footprint "MountingHole:MountingHole_2mm")
