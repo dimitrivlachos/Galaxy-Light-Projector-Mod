@@ -2306,7 +2306,7 @@
     (uuid 15865352-5579-4282-b1c7-2105bb4ed42c)
     (property "Reference" "J1" (id 0) (at 242.57 49.53 90))
     (property "Value" "LED RGBW Connector" (id 1) (at 242.57 52.07 90))
-    (property "Footprint" "Connector_JST:JST_PH_B5B-PH-K_1x05_P2.00mm_Vertical" (id 2) (at 242.57 55.88 0)
+    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x05_P1.00mm_Vertical" (id 2) (at 242.57 55.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 242.57 55.88 0)
@@ -2356,7 +2356,7 @@
   (symbol (lib_id "power:+3.3V") (at 20.32 177.8 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 1e78db37-f50a-45c4-b153-c256acc981ae)
-    (property "Reference" "#PWR?" (id 0) (at 20.32 181.61 0)
+    (property "Reference" "#PWR0129" (id 0) (at 20.32 181.61 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (id 1) (at 20.32 172.72 0))
@@ -2410,7 +2410,7 @@
     (property "Value" "Power Header" (id 1) (at 74.93 16.51 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" (id 2) (at 76.2 19.05 0)
+    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical" (id 2) (at 76.2 19.05 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 76.2 19.05 0)
@@ -2459,7 +2459,7 @@
   (symbol (lib_id "power:+3.3V") (at 20.32 160.02 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 2b81e583-3ece-4330-a98c-905d7bba5953)
-    (property "Reference" "#PWR?" (id 0) (at 20.32 163.83 0)
+    (property "Reference" "#PWR0124" (id 0) (at 20.32 163.83 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (id 1) (at 20.32 154.94 0))
@@ -2509,7 +2509,7 @@
   (symbol (lib_id "power:+3.3V") (at 115.57 38.1 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 3dd995bf-1c42-4cf0-bf39-520f457eb665)
-    (property "Reference" "#PWR?" (id 0) (at 115.57 41.91 0)
+    (property "Reference" "#PWR0119" (id 0) (at 115.57 41.91 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (id 1) (at 115.57 33.02 0))
@@ -2645,7 +2645,7 @@
     (property "Value" "Boot mode" (id 1) (at 154.94 53.34 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" (id 2) (at 156.21 55.88 0)
+    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical" (id 2) (at 156.21 55.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 156.21 55.88 0)
@@ -2674,7 +2674,7 @@
   (symbol (lib_id "power:+5V") (at 231.14 64.77 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 6250fc85-68f6-4c4c-9a7f-87e533b485e6)
-    (property "Reference" "#PWR?" (id 0) (at 231.14 68.58 0)
+    (property "Reference" "#PWR0132" (id 0) (at 231.14 68.58 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (id 1) (at 231.14 59.69 0))
@@ -2728,7 +2728,7 @@
   (symbol (lib_id "power:+5V") (at 73.66 182.88 180) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 6c35a0b6-b7a4-4567-8317-7ad869f5617a)
-    (property "Reference" "#PWR?" (id 0) (at 73.66 179.07 0)
+    (property "Reference" "#PWR0120" (id 0) (at 73.66 179.07 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (id 1) (at 73.66 187.96 0))
@@ -2963,7 +2963,7 @@
     (uuid 8053d7a9-b591-4fcc-92bc-dac28827855b)
     (property "Reference" "J2" (id 0) (at 44.45 93.98 0))
     (property "Value" "USB to UART" (id 1) (at 44.45 96.52 0))
-    (property "Footprint" "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical" (id 2) (at 44.45 102.87 0)
+    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x03_P1.00mm_Vertical" (id 2) (at 44.45 102.87 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 44.45 102.87 0)
@@ -2992,7 +2992,7 @@
   (symbol (lib_id "power:+5V") (at 127 180.34 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 875207d2-3cac-4268-9ce4-c8dfdee8a166)
-    (property "Reference" "#PWR?" (id 0) (at 127 184.15 0)
+    (property "Reference" "#PWR0121" (id 0) (at 127 184.15 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (id 1) (at 127 175.26 0))
@@ -3110,7 +3110,7 @@
   (symbol (lib_id "power:+3.3V") (at 20.32 142.24 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 9a6fa5b4-b0c9-49bb-a613-6c52b39239b4)
-    (property "Reference" "#PWR?" (id 0) (at 20.32 146.05 0)
+    (property "Reference" "#PWR0123" (id 0) (at 20.32 146.05 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (id 1) (at 20.32 137.16 0))
@@ -3339,7 +3339,7 @@
     (property "Value" "Motor Connector" (id 1) (at 135.89 172.72 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" (id 2) (at 137.16 175.26 0)
+    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical" (id 2) (at 137.16 175.26 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 137.16 175.26 0)
@@ -3507,7 +3507,7 @@
   (symbol (lib_id "power:+5V") (at 58.42 34.29 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid ceb45cf2-0fe7-42f9-ad1d-580223ee90c1)
-    (property "Reference" "#PWR?" (id 0) (at 58.42 38.1 0)
+    (property "Reference" "#PWR0117" (id 0) (at 58.42 38.1 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (id 1) (at 58.42 29.21 0))
@@ -3529,7 +3529,7 @@
     (property "Value" "Projector Connector" (id 1) (at 72.39 175.26 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" (id 2) (at 73.66 177.8 0)
+    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical" (id 2) (at 73.66 177.8 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 73.66 177.8 0)
@@ -3630,7 +3630,7 @@
   (symbol (lib_id "power:+3.3V") (at 20.32 124.46 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid f0e1fafc-e604-4a8c-8de0-baa3f3a73215)
-    (property "Reference" "#PWR?" (id 0) (at 20.32 128.27 0)
+    (property "Reference" "#PWR0131" (id 0) (at 20.32 128.27 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (id 1) (at 20.32 119.38 0))
@@ -3810,11 +3810,29 @@
     (path "/91a41554-54ec-4359-bb4e-2636f5173080"
       (reference "#PWR0116") (unit 1) (value "GNDREF") (footprint "")
     )
+    (path "/ceb45cf2-0fe7-42f9-ad1d-580223ee90c1"
+      (reference "#PWR0117") (unit 1) (value "+5V") (footprint "")
+    )
     (path "/7fcaebeb-d73b-453f-a5f1-f9b2c917aace"
       (reference "#PWR0118") (unit 1) (value "GNDREF") (footprint "")
     )
+    (path "/3dd995bf-1c42-4cf0-bf39-520f457eb665"
+      (reference "#PWR0119") (unit 1) (value "+3.3V") (footprint "")
+    )
+    (path "/6c35a0b6-b7a4-4567-8317-7ad869f5617a"
+      (reference "#PWR0120") (unit 1) (value "+5V") (footprint "")
+    )
+    (path "/875207d2-3cac-4268-9ce4-c8dfdee8a166"
+      (reference "#PWR0121") (unit 1) (value "+5V") (footprint "")
+    )
     (path "/6edab904-b6d0-465b-a789-6a837e79d8a9"
       (reference "#PWR0122") (unit 1) (value "GNDREF") (footprint "")
+    )
+    (path "/9a6fa5b4-b0c9-49bb-a613-6c52b39239b4"
+      (reference "#PWR0123") (unit 1) (value "+3.3V") (footprint "")
+    )
+    (path "/2b81e583-3ece-4330-a98c-905d7bba5953"
+      (reference "#PWR0124") (unit 1) (value "+3.3V") (footprint "")
     )
     (path "/f965009b-19d6-4a5a-b39c-546851d9b24f"
       (reference "#PWR0125") (unit 1) (value "GNDREF") (footprint "")
@@ -3828,41 +3846,23 @@
     (path "/92489af0-452b-4428-b874-5ae860d3541f"
       (reference "#PWR0128") (unit 1) (value "GNDREF") (footprint "")
     )
+    (path "/1e78db37-f50a-45c4-b153-c256acc981ae"
+      (reference "#PWR0129") (unit 1) (value "+3.3V") (footprint "")
+    )
     (path "/647e9655-d114-41d0-ac50-d2021a26dfaf"
       (reference "#PWR0130") (unit 1) (value "GNDREF") (footprint "")
+    )
+    (path "/f0e1fafc-e604-4a8c-8de0-baa3f3a73215"
+      (reference "#PWR0131") (unit 1) (value "+3.3V") (footprint "")
+    )
+    (path "/6250fc85-68f6-4c4c-9a7f-87e533b485e6"
+      (reference "#PWR0132") (unit 1) (value "+5V") (footprint "")
     )
     (path "/2503cde9-dbb2-4f03-b897-d478f9697a99"
       (reference "#PWR0134") (unit 1) (value "GNDREF") (footprint "")
     )
     (path "/7864a6a3-9973-4e3d-ae42-feafce0c96fd"
       (reference "#PWR0135") (unit 1) (value "GNDREF") (footprint "")
-    )
-    (path "/1e78db37-f50a-45c4-b153-c256acc981ae"
-      (reference "#PWR?") (unit 1) (value "+3.3V") (footprint "")
-    )
-    (path "/2b81e583-3ece-4330-a98c-905d7bba5953"
-      (reference "#PWR?") (unit 1) (value "+3.3V") (footprint "")
-    )
-    (path "/3dd995bf-1c42-4cf0-bf39-520f457eb665"
-      (reference "#PWR?") (unit 1) (value "+3.3V") (footprint "")
-    )
-    (path "/6250fc85-68f6-4c4c-9a7f-87e533b485e6"
-      (reference "#PWR?") (unit 1) (value "+5V") (footprint "")
-    )
-    (path "/6c35a0b6-b7a4-4567-8317-7ad869f5617a"
-      (reference "#PWR?") (unit 1) (value "+5V") (footprint "")
-    )
-    (path "/875207d2-3cac-4268-9ce4-c8dfdee8a166"
-      (reference "#PWR?") (unit 1) (value "+5V") (footprint "")
-    )
-    (path "/9a6fa5b4-b0c9-49bb-a613-6c52b39239b4"
-      (reference "#PWR?") (unit 1) (value "+3.3V") (footprint "")
-    )
-    (path "/ceb45cf2-0fe7-42f9-ad1d-580223ee90c1"
-      (reference "#PWR?") (unit 1) (value "+5V") (footprint "")
-    )
-    (path "/f0e1fafc-e604-4a8c-8de0-baa3f3a73215"
-      (reference "#PWR?") (unit 1) (value "+3.3V") (footprint "")
     )
     (path "/f4c52e4c-8f04-4b7c-b2ab-c31362cd5052"
       (reference "C2") (unit 1) (value "1uF") (footprint "Capacitor_THT:CP_Radial_D4.0mm_P1.50mm")
@@ -3910,22 +3910,22 @@
       (reference "H4") (unit 1) (value "MountingHole") (footprint "MountingHole:MountingHole_2.5mm")
     )
     (path "/15865352-5579-4282-b1c7-2105bb4ed42c"
-      (reference "J1") (unit 1) (value "LED RGBW Connector") (footprint "Connector_JST:JST_PH_B5B-PH-K_1x05_P2.00mm_Vertical")
+      (reference "J1") (unit 1) (value "LED RGBW Connector") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x05_P1.00mm_Vertical")
     )
     (path "/8053d7a9-b591-4fcc-92bc-dac28827855b"
-      (reference "J2") (unit 1) (value "USB to UART") (footprint "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical")
+      (reference "J2") (unit 1) (value "USB to UART") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x03_P1.00mm_Vertical")
     )
     (path "/b966e064-33c4-411a-9b47-10b81f480fe0"
-      (reference "J3") (unit 1) (value "Motor Connector") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
+      (reference "J3") (unit 1) (value "Motor Connector") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical")
     )
     (path "/d0bd552a-bfa0-4f1f-b5c2-ee2ac8ffb873"
-      (reference "J4") (unit 1) (value "Projector Connector") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
+      (reference "J4") (unit 1) (value "Projector Connector") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical")
     )
     (path "/236aaded-fe8f-4d86-b554-49801134b45a"
-      (reference "J6") (unit 1) (value "Power Header") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
+      (reference "J6") (unit 1) (value "Power Header") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical")
     )
     (path "/60a99428-90c5-4a9b-80ba-bf6e39664bb4"
-      (reference "J7") (unit 1) (value "Boot mode") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
+      (reference "J7") (unit 1) (value "Boot mode") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical")
     )
     (path "/b00305ca-f0d0-4bad-8534-aa8251ff47b4"
       (reference "Q1") (unit 1) (value "IRLML0030") (footprint "Package_TO_SOT_SMD:SOT-23")
