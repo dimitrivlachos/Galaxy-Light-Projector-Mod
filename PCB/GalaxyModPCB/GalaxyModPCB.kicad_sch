@@ -2886,7 +2886,7 @@
     (property "Value" "Motor Connector" (id 1) (at 135.89 172.72 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical" (id 2) (at 137.16 175.26 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" (id 2) (at 137.16 175.26 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 137.16 175.26 0)
@@ -3406,7 +3406,7 @@
       (reference "J4") (unit 1) (value "USB to UART") (footprint "Jumper:SolderJumper-3_P1.3mm_Open_Pad1.0x1.5mm")
     )
     (path "/b966e064-33c4-411a-9b47-10b81f480fe0"
-      (reference "J5") (unit 1) (value "Motor Connector") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical")
+      (reference "J5") (unit 1) (value "Motor Connector") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/d0bd552a-bfa0-4f1f-b5c2-ee2ac8ffb873"
       (reference "J6") (unit 1) (value "Projector Connector") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical")
