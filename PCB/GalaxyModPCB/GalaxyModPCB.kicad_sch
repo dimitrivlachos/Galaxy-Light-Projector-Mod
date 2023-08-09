@@ -2044,9 +2044,9 @@
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "Power Header" (id 1) (at 74.93 16.51 90)
-      (effects (font (size 1.27 1.27)) (justify right))
+      (effects (font (size 1.27 1.27)) (justify right) hide)
     )
-    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical" (id 2) (at 76.2 19.05 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" (id 2) (at 76.2 19.05 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 76.2 19.05 0)
@@ -2236,7 +2236,7 @@
     (property "Value" "Boot mode" (id 1) (at 154.94 53.34 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical" (id 2) (at 156.21 55.88 0)
+    (property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_TrianglePad1.0x1.5mm" (id 2) (at 156.21 55.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 156.21 55.88 0)
@@ -3394,10 +3394,10 @@
       (reference "H4") (unit 1) (value "MountingHole") (footprint "MountingHole:MountingHole_2.5mm")
     )
     (path "/236aaded-fe8f-4d86-b554-49801134b45a"
-      (reference "J1") (unit 1) (value "Power Header") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical")
+      (reference "J1") (unit 1) (value "Power Header") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/60a99428-90c5-4a9b-80ba-bf6e39664bb4"
-      (reference "J2") (unit 1) (value "Boot mode") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical")
+      (reference "J2") (unit 1) (value "Boot mode") (footprint "Jumper:SolderJumper-2_P1.3mm_Open_TrianglePad1.0x1.5mm")
     )
     (path "/15865352-5579-4282-b1c7-2105bb4ed42c"
       (reference "J3") (unit 1) (value "LED RGBW Connector") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x05_P1.00mm_Vertical")
