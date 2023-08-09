@@ -1955,7 +1955,7 @@
     (uuid 15865352-5579-4282-b1c7-2105bb4ed42c)
     (property "Reference" "J3" (id 0) (at 242.57 49.53 90))
     (property "Value" "LED RGBW Connector" (id 1) (at 242.57 52.07 90))
-    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x05_P1.00mm_Vertical" (id 2) (at 242.57 55.88 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical" (id 2) (at 242.57 55.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 242.57 55.88 0)
@@ -2538,7 +2538,7 @@
     (uuid 8053d7a9-b591-4fcc-92bc-dac28827855b)
     (property "Reference" "J4" (id 0) (at 44.45 93.98 0))
     (property "Value" "USB to UART" (id 1) (at 44.45 96.52 0))
-    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x03_P1.00mm_Vertical" (id 2) (at 44.45 102.87 0)
+    (property "Footprint" "Jumper:SolderJumper-3_P1.3mm_Open_Pad1.0x1.5mm" (id 2) (at 44.45 102.87 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 44.45 102.87 0)
@@ -3400,10 +3400,10 @@
       (reference "J2") (unit 1) (value "Boot mode") (footprint "Jumper:SolderJumper-2_P1.3mm_Open_TrianglePad1.0x1.5mm")
     )
     (path "/15865352-5579-4282-b1c7-2105bb4ed42c"
-      (reference "J3") (unit 1) (value "LED RGBW Connector") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x05_P1.00mm_Vertical")
+      (reference "J3") (unit 1) (value "LED RGBW Connector") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical")
     )
     (path "/8053d7a9-b591-4fcc-92bc-dac28827855b"
-      (reference "J4") (unit 1) (value "USB to UART") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x03_P1.00mm_Vertical")
+      (reference "J4") (unit 1) (value "USB to UART") (footprint "Jumper:SolderJumper-3_P1.3mm_Open_Pad1.0x1.5mm")
     )
     (path "/b966e064-33c4-411a-9b47-10b81f480fe0"
       (reference "J5") (unit 1) (value "Motor Connector") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical")
