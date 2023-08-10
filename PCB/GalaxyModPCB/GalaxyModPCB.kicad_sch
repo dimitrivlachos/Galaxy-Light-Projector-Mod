@@ -3076,7 +3076,7 @@
     (property "Value" "Projector Connector" (id 1) (at 72.39 175.26 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical" (id 2) (at 73.66 177.8 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" (id 2) (at 73.66 177.8 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 73.66 177.8 0)
@@ -3409,7 +3409,7 @@
       (reference "J5") (unit 1) (value "Motor Connector") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/d0bd552a-bfa0-4f1f-b5c2-ee2ac8ffb873"
-      (reference "J6") (unit 1) (value "Projector Connector") (footprint "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical")
+      (reference "J6") (unit 1) (value "Projector Connector") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/b00305ca-f0d0-4bad-8534-aa8251ff47b4"
       (reference "Q1") (unit 1) (value "IRLML0030") (footprint "Package_TO_SOT_SMD:SOT-23")
