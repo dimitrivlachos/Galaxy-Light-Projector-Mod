@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "GalaxyLibrary")(type "KiCad")(uri "${KIPRJMOD}/GalaxyLibrary.pretty")(options "")(descr ""))
+)
