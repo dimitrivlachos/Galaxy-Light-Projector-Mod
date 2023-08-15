@@ -3756,7 +3756,7 @@
     (property "Value" "LED" (at 80.01 54.9274 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "LED_SMD:LED_0201_0603Metric_Pad0.64x0.40mm_HandSolder" (at 76.2 52.07 0)
+    (property "Footprint" "LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder" (at 76.2 52.07 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "https://www.digikey.co.uk/en/products/detail/liteon/LTST-C190KRKT/386817" (at 76.2 52.07 0)
