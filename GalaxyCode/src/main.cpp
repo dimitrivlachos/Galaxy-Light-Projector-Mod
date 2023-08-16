@@ -33,6 +33,18 @@ const IPAddress SUBNET(255, 255, 255, 0);
 #define STATE_SWITCH 26       // State switch
 #pragma endregion
 
+#pragma region State Definitions
+enum LEDState {
+  Off,
+  Green,
+  Blue,
+  White,
+  Brown,
+  Motor,
+  Projector
+};
+#pragma endregion
+
 int ledStates = 0b100000;
 
 void setup() {
