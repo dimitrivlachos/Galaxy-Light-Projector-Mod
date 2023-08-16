@@ -21,10 +21,10 @@ const IPAddress SUBNET(255, 255, 255, 0);
 #pragma endregion
 
 #pragma region Pin Definitions
-#define GREEN_LED 17          // Green wire
-#define BLUE_LED 18           // Blue wire
-#define WHITE_LED 19          // White wire
-#define BROWN_LED 21          // Brown wire
+#define RED_LED 17            // Green wire
+#define WHITE_LED 18          // Blue wire
+#define GREEN_LED 19          // White wire
+#define BLUE_LED 21           // Red wire
 #define PROJECTOR_LED 27      // Moon projector
 #define MOTOR_BJT 4           // Motor control
 #define MOTOR_SWITCH 32       // Motor switch
@@ -33,21 +33,16 @@ const IPAddress SUBNET(255, 255, 255, 0);
 #define STATE_SWITCH 26       // State switch
 #pragma endregion
 
-#pragma region State Definitions
-// State Definitions
-
-#pragma endregion
-
 int ledStates = 0b100000;
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Hello World!");
 
+  pinMode(RED_LED, OUTPUT);
+  pinMode(WHITE_LED, OUTPUT);
   pinMode(GREEN_LED, OUTPUT);
   pinMode(BLUE_LED, OUTPUT);
-  pinMode(WHITE_LED, OUTPUT);
-  pinMode(BROWN_LED, OUTPUT);
   pinMode(PROJECTOR_LED, OUTPUT);
   pinMode(MOTOR_BJT, OUTPUT);
   pinMode(MOTOR_SWITCH, INPUT_PULLUP);
@@ -89,10 +84,10 @@ float lastChangeTime = 0;
 void loop() {
   if (millis() - lastChangeTime > 1000) {
     // Cycle through each LED, turning one on at a time
-    digitalWrite(GREEN_LED, ledStates & 0b100000);
-    digitalWrite(BLUE_LED, ledStates & 0b010000);
-    digitalWrite(WHITE_LED, ledStates & 0b001000);
-    digitalWrite(BROWN_LED, ledStates & 0b000100);
+    digitalWrite(RED_LED, ledStates & 0b100000);
+    digitalWrite(WHITE_LED, ledStates & 0b010000);
+    digitalWrite(GREEN_LED, ledStates & 0b001000);
+    digitalWrite(BLUE_LED, ledStates & 0b000100);
     digitalWrite(MOTOR_BJT, ledStates & 0b000010);
     digitalWrite(PROJECTOR_LED, ledStates & 0b000001);
 
