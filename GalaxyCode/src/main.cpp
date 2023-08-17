@@ -98,7 +98,7 @@ void setup() {
 
   Serial.println("Ready");
 
-  Serial.print("Initialising Task1");
+  Serial.print("Initialising Task1... ");
   xTaskCreatePinnedToCore(
              Task1code, /* Task function. */
              "Task1",   /* name of task. */
@@ -109,7 +109,7 @@ void setup() {
              0);        /* pin task to core 0 */          
   delay(500); 
 
-  Serial.print("Initialising Task2");
+  Serial.print("Initialising Task2... ");
   xTaskCreatePinnedToCore(
                     Task2code,   /* Task function. */
                     "Task2",     /* name of task. */
