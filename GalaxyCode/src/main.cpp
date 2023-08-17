@@ -51,7 +51,7 @@ int ledStates = 0b100000;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Hello World!");
+  Serial.println("Booting");
 
   pinMode(RED_LED, OUTPUT);
   pinMode(WHITE_LED, OUTPUT);
@@ -91,6 +91,8 @@ void setup() {
   server.begin();
   Serial.println("HTTP server started");
   #pragma endregion
+
+  Serial.println("Ready");
 }
 
 float lastChangeTime = 0;
