@@ -5,15 +5,17 @@
 #include <AsyncElegantOTA.h>
 
 AsyncWebServer server(80);
+TaskHandle_t Task1;
+TaskHandle_t Task2;
 
 #pragma region Function Declarations
-int myFunction(int, int);
-void checkButtons();
+void Task1code( void * pvParameters );
+void Task2code( void * pvParameters );
 #pragma endregion
 
 #pragma region Wifi Settings
-const char* SSID = "REPLACE_WITH_YOUR_SSID";
-const char* PASSWORD = "REPLACE_WITH_YOUR_PASSWORD";
+const char* SSID = "ssid";
+const char* PASSWORD = "pass";
 const char* HOSTNAME = "GalaxyProjector-Dev";
 const IPAddress IP(192, 168, 0, 50);
 const IPAddress GATEWAY(192, 168, 0, 1);
@@ -95,46 +97,54 @@ void setup() {
   #pragma endregion
 
   Serial.println("Ready");
-}
 
-float lastChangeTime = 0;
+  Serial.print("Initialising Task1");
+  xTaskCreatePinnedToCore(
+             Task1code, /* Task function. */
+             "Task1",   /* name of task. */
+             10000,     /* Stack size of task */
+             NULL,      /* parameter of the task */
+             1,         /* priority of the task */
+             &Task1,    /* Task handle to keep track of created task */
+             0);        /* pin task to core 0 */          
+  delay(500); 
+
+  Serial.print("Initialising Task2");
+  xTaskCreatePinnedToCore(
+                    Task2code,   /* Task function. */
+                    "Task2",     /* name of task. */
+                    10000,       /* Stack size of task */
+                    NULL,        /* parameter of the task */
+                    1,           /* priority of the task */
+                    &Task2,      /* Task handle to keep track of created task */
+                    1);          /* pin task to core 1 */
+    delay(500); 
+}
 
 void loop() {
-  if (millis() - lastChangeTime > 1000) {
-    // Cycle through each LED, turning one on at a time
-    digitalWrite(RED_LED, ledStates & 0b100000);
-    digitalWrite(WHITE_LED, ledStates & 0b010000);
-    digitalWrite(GREEN_LED, ledStates & 0b001000);
-    digitalWrite(BLUE_LED, ledStates & 0b000100);
-    digitalWrite(MOTOR_BJT, ledStates & 0b000010);
-    digitalWrite(PROJECTOR_LED, ledStates & 0b000001);
-
-    ledStates = ledStates >> 1;
-    //Reset the LED states if all LEDs have been turned off
-    if(ledStates == 0) {
-      ledStates = 0b100000;
-    }
-    lastChangeTime = millis();
-  }
-  checkButtons();
+  
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+void Task1code( void * pvParameters ){
+  Serial.print("Task1 running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    digitalWrite(RED_LED, HIGH);
+    delay(1000);
+    digitalWrite(RED_LED, LOW);
+    delay(1000);
+  }
 }
 
-void checkButtons() {
-  if(digitalRead(MOTOR_SWITCH) == LOW) {
-    Serial.println("Motor Switch Pressed");
-  }
-  if(digitalRead(BRIGHTNESS_SWITCH) == LOW) {
-    Serial.println("Brightness Switch Pressed");
-  }
-  if(digitalRead(COLOUR_SWITCH) == LOW) {
-    Serial.println("Colour Switch Pressed");
-  }
-  if(digitalRead(STATE_SWITCH) == LOW) {
-    Serial.println("State Switch Pressed");
+void Task2code( void * pvParameters ){
+  Serial.print("Task2 running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    digitalWrite(GREEN_LED, HIGH);
+    delay(700);
+    digitalWrite(GREEN_LED, LOW);
+    delay(700);
   }
 }
