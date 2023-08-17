@@ -53,16 +53,20 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Booting");
 
+  #pragma region Pin Initialisation
   pinMode(RED_LED, OUTPUT);
   pinMode(WHITE_LED, OUTPUT);
   pinMode(GREEN_LED, OUTPUT);
   pinMode(BLUE_LED, OUTPUT);
   pinMode(PROJECTOR_LED, OUTPUT);
   pinMode(MOTOR_BJT, OUTPUT);
+  
+  // Switches are active low so use INPUT_PULLUP
   pinMode(MOTOR_SWITCH, INPUT_PULLUP);
   pinMode(BRIGHTNESS_SWITCH, INPUT_PULLUP);
   pinMode(COLOUR_SWITCH, INPUT_PULLUP);
   pinMode(STATE_SWITCH, INPUT_PULLUP);
+  #pragma endregion
 
   #pragma region Wifi and OTA Setup
   WiFi.mode(WIFI_STA);
