@@ -18,8 +18,6 @@ const char* HOSTNAME = "GalaxyProjector-Dev";
 const IPAddress IP(192, 168, 0, 50);
 const IPAddress GATEWAY(192, 168, 0, 1);
 const IPAddress SUBNET(255, 255, 255, 0);
-const IPAddress DNS1(192, 168, 0, 6);
-const IPAddress DNS2(192, 168, 0, 1);
 #pragma endregion
 
 #pragma region Pin Definitions
@@ -72,7 +70,7 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(SSID, PASSWORD);
   WiFi.setHostname(HOSTNAME);
-  WiFi.config(IP, GATEWAY, SUBNET, DNS1, DNS2);
+  WiFi.config(IP, GATEWAY, SUBNET);
 
   Serial.println("");
 
