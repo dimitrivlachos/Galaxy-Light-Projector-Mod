@@ -23,7 +23,7 @@ Modification of a consumer night-light projector, converting it into a smart dev
     <td><img src="PCB/Examples/Back.jpg"></td>
  </table>
 
- ### Fabriaction Render
+ ### Fabrication Render
   <table>
     <tr>
       <td>Front</td>
