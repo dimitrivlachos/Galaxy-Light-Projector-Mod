@@ -8,9 +8,15 @@ AsyncWebServer server(80);
 TaskHandle_t TaskLoopCore0;
 TaskHandle_t TaskLoopCore1;
 
+bool motorSwitchState = false;
+bool brightnessSwitchState = false;
+bool colourSwitchState = false;
+bool stateSwitchState = false;
+
 #pragma region Function Declarations
 void LoopCore0( void * pvParameters );
 void LoopCore1( void * pvParameters );
+void checkSwitch(int switchPin, bool &switchState, void (*callback)());
 #pragma endregion
 
 #pragma region Wifi Settings
@@ -46,8 +52,6 @@ enum LEDState {
   Projector
 };
 #pragma endregion
-
-int ledStates = 0b100000;
 
 void setup() {
   Serial.begin(115200);
@@ -100,24 +104,24 @@ void setup() {
 
   Serial.print("Initialising TaskLoopCore0... ");
   xTaskCreatePinnedToCore(
-    LoopCore0, /* Task function. */
-    "TaskLoopCore0",   /* name of task. */
-    10000,     /* Stack size of task */
-    NULL,      /* parameter of the task */
-    1,         /* priority of the task */
-    &TaskLoopCore0,    /* Task handle to keep track of created task */
-    0);        /* pin task to core 0 */          
+    LoopCore0,          /* Task function. */
+    "TaskLoopCore0",    /* name of task. */
+    10000,              /* Stack size of task */
+    NULL,               /* parameter of the task */
+    1,                  /* priority of the task */
+    &TaskLoopCore0,     /* Task handle to keep track of created task */
+    0);                 /* pin task to core 0 */          
   delay(500); 
 
   Serial.print("Initialising TaskLoopCore1... ");
   xTaskCreatePinnedToCore(
-    LoopCore1,   /* Task function. */
-    "TaskLoopCore1",     /* name of task. */
-    10000,       /* Stack size of task */
-    NULL,        /* parameter of the task */
-    1,           /* priority of the task */
-    &TaskLoopCore1,      /* Task handle to keep track of created task */
-    1);          /* pin task to core 1 */
+    LoopCore1,            /* Task function. */
+    "TaskLoopCore1",      /* name of task. */
+    10000,                /* Stack size of task */
+    NULL,                 /* parameter of the task */
+    1,                    /* priority of the task */
+    &TaskLoopCore1,       /* Task handle to keep track of created task */
+    1);                   /* pin task to core 1 */
   delay(500); 
 }
 
@@ -137,14 +141,68 @@ void LoopCore0( void * pvParameters ){
   }
 }
 
+/* 
+ * This task is pinned to core 1
+ * It is used to monitor the state of the switches
+*/
+
 void LoopCore1( void * pvParameters ){
   Serial.print("TaskLoopCore1 running on core ");
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    digitalWrite(GREEN_LED, HIGH);
-    delay(700);
-    digitalWrite(GREEN_LED, LOW);
-    delay(700);
+    checkSwitch(MOTOR_SWITCH, motorSwitchState, []() {
+    Serial.println("Motor Switch Pressed");
+    // Additional actions to perform when the motor switch is pressed
+  });
+
+  checkSwitch(BRIGHTNESS_SWITCH, brightnessSwitchState, []() {
+    Serial.println("Brightness Switch Pressed");
+    // Additional actions to perform when the brightness switch is pressed
+  });
+
+  checkSwitch(COLOUR_SWITCH, colourSwitchState, []() {
+    Serial.println("Colour Switch Pressed");
+    // Additional actions to perform when the colour switch is pressed
+  });
+
+  checkSwitch(STATE_SWITCH, stateSwitchState, []() {
+    Serial.println("State Switch Pressed");
+    // Additional actions to perform when the state switch is pressed
+  });
   }
+}
+
+/**
+ * Checks the state of a switch connected to the specified pin and updates the switch state accordingly.
+ * 
+ * @param switchPin The digital pin to which the switch is connected.
+ * @param switchState A reference to a boolean variable representing the current state of the switch.
+ *                    This variable will be updated based on the switch's state.
+ * @param callback A callback function that will be called when the switch is pressed.
+ *                 The callback function should have the signature: void functionName()
+ */
+void checkSwitch(int switchPin, bool &switchState, void (*callback)()) {
+  static unsigned long lastDebounceTime = 0;
+  static unsigned long timeReleased = 0;    // Using static variables to preserve state between function calls
+  const unsigned long debounceDelay = 100;   // Debounce delay in milliseconds
+  unsigned long currentMillis = millis();
+
+  int switchReading = digitalRead(switchPin);
+
+  if (switchReading == LOW) { // If the switch is pressed
+    if (!switchState) {
+      switchState = true;
+      callback(); // Call the callback function
+    }
+  } // No time debounce is required for the switch being pressed as the change in state provides this functionality
+  
+  else { // If the switch is released
+    // Calculate the time since the switch was released
+    unsigned long timeSinceRelease = currentMillis - timeReleased;
+    if(switchState && timeSinceRelease > debounceDelay) {
+      switchState = false;
+      timeReleased = currentMillis;
+    }
+  } // A debounce delay is required for the switch being released as the change in state does not prevent the switch from activating immediately after being released
 }
