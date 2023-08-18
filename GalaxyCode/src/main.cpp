@@ -5,12 +5,12 @@
 #include <AsyncElegantOTA.h>
 
 AsyncWebServer server(80);
-TaskHandle_t Task1;
-TaskHandle_t Task2;
+TaskHandle_t TaskLoopCore0;
+TaskHandle_t TaskLoopCore1;
 
 #pragma region Function Declarations
-void Task1code( void * pvParameters );
-void Task2code( void * pvParameters );
+void LoopCore0( void * pvParameters );
+void LoopCore1( void * pvParameters );
 #pragma endregion
 
 #pragma region Wifi Settings
@@ -96,27 +96,27 @@ void setup() {
   Serial.println("HTTP server started");
   #pragma endregion
 
-  Serial.println("Ready");
+  Serial.println("Initialising Tasks");
 
-  Serial.print("Initialising Task1... ");
+  Serial.print("Initialising TaskLoopCore0... ");
   xTaskCreatePinnedToCore(
-    Task1code, /* Task function. */
-    "Task1",   /* name of task. */
+    LoopCore0, /* Task function. */
+    "TaskLoopCore0",   /* name of task. */
     10000,     /* Stack size of task */
     NULL,      /* parameter of the task */
     1,         /* priority of the task */
-    &Task1,    /* Task handle to keep track of created task */
+    &TaskLoopCore0,    /* Task handle to keep track of created task */
     0);        /* pin task to core 0 */          
   delay(500); 
 
-  Serial.print("Initialising Task2... ");
+  Serial.print("Initialising TaskLoopCore1... ");
   xTaskCreatePinnedToCore(
-    Task2code,   /* Task function. */
-    "Task2",     /* name of task. */
+    LoopCore1,   /* Task function. */
+    "TaskLoopCore1",     /* name of task. */
     10000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
-    &Task2,      /* Task handle to keep track of created task */
+    &TaskLoopCore1,      /* Task handle to keep track of created task */
     1);          /* pin task to core 1 */
   delay(500); 
 }
@@ -125,8 +125,8 @@ void loop() {
   
 }
 
-void Task1code( void * pvParameters ){
-  Serial.print("Task1 running on core ");
+void LoopCore0( void * pvParameters ){
+  Serial.print("TaskLoopCore0 running on core ");
   Serial.println(xPortGetCoreID());
 
   for(;;){
@@ -137,8 +137,8 @@ void Task1code( void * pvParameters ){
   }
 }
 
-void Task2code( void * pvParameters ){
-  Serial.print("Task2 running on core ");
+void LoopCore1( void * pvParameters ){
+  Serial.print("TaskLoopCore1 running on core ");
   Serial.println(xPortGetCoreID());
 
   for(;;){
