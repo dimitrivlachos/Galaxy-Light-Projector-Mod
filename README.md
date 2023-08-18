@@ -8,13 +8,30 @@ Modification of a consumer night-light projector, converting it into a smart dev
 - Better circuit protection
 
 ## Custom PCB
+
+### KiCad Render
 <table>
   <tr>
     <td>Front</td>
+  </tr>
+    <td><img src="PCB/Examples/Front.jpg"></td>
+  </tr>
+  <tr>
     <td>Back</td>
   </tr>
   <tr>
-    <td><img src="PCB/Examples/Front.jpg" height=400></td>
-    <td><img src="PCB/Examples/Back.jpg" height=400></td>
-  </tr>
+    <td><img src="PCB/Examples/Back.jpg"></td>
  </table>
+
+ ### Fabriaction Render
+  <table>
+    <tr>
+      <td>Front</td>
+    </tr>
+      <td><img src="PCB/Examples/FabFront.png"></td>
+    </tr>
+    <tr>
+      <td>Back</td>
+    </tr>
+    <tr>
+      <td><img src="PCB/Examples/FabBack.png"></td>
