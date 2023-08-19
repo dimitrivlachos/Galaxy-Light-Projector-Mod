@@ -157,7 +157,7 @@ void setup() {
   Serial.print("Initialising TaskLoopCore0... ");
   xTaskCreatePinnedToCore(
     LoopOutputHandle,     /* Task function. */
-    "TaskLoopCore0",      /* name of task. */
+    "TaskLoopCore1",      /* name of task. */
     10000,                /* Stack size of task */
     NULL,                 /* parameter of the task */
     1,                    /* priority of the task */
@@ -168,7 +168,7 @@ void setup() {
   Serial.print("Initialising TaskLoopCore1... ");
   xTaskCreatePinnedToCore(
     LoopStateHandle,            /* Task function. */
-    "TaskLoopCore1",      /* name of task. */
+    "TaskLoopCore0",      /* name of task. */
     10000,                /* Stack size of task */
     NULL,                 /* parameter of the task */
     1,                    /* priority of the task */
@@ -180,6 +180,8 @@ void setup() {
 void loop() {
 
 }
+
+#pragma region Output Handlers
 
 void LoopOutputHandle( void * pvParameters ){
   Serial.print("TaskLoopCore0 running on core ");
@@ -312,6 +314,7 @@ void setRGBWLed(int red, int green, int blue, int white) {
   analogWrite(BLUE_LED, blue * brightness);
   analogWrite(WHITE_LED, white * brightness);
 }
+#pragma endregion
 
 #pragma region State Handlers
 /* 
