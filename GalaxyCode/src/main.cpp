@@ -17,6 +17,14 @@ bool stateSwitchState = false;
 void LoopCore0( void * pvParameters );
 void LoopCore1( void * pvParameters );
 void checkSwitch(int switchPin, bool &switchState, void (*callback)());
+void handleStateSwitch();
+void handleMotorSwitch();
+void handleBrightnessSwitch();
+void handleColourSwitch();
+template <typename T> 
+T incrementEnum(T &enumValue, T lastEnumValue);
+template <typename EnumType>
+void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switchName);
 #pragma endregion
 
 #pragma region Wifi Settings
@@ -42,16 +50,52 @@ const IPAddress SUBNET(255, 255, 255, 0);
 #pragma endregion
 
 #pragma region State Definitions
-enum LEDState {
-  Off,
-  Green,
-  Blue,
-  White,
-  Brown,
-  Motor,
-  Projector
+enum PowerStateEnum {
+  PowerOff,
+  On,
+  Project,
+  PowerLast
 };
+PowerStateEnum pStates = PowerOff;
+
+enum RGBWStateEnum {
+  LedOff,
+  Blue,
+  Red,
+  Green,
+  White,
+  BlueRed,
+  BlueGreen,
+  RedGreen,
+  RedWhite,
+  GreenWhite,
+  RedGreenBlue,
+  BlueGreenWhite,
+  BlueRedGreenWhite,
+  Cycle,
+  LedLast
+};
+RGBWStateEnum rgbwStates = LedOff;
+
+enum MotorStateEnum {
+  MotorOff,
+  Fast,
+  Slow,
+  MotorLast
+};
+MotorStateEnum mStates = MotorOff;
+
+enum BrightnessStateEnum {
+  ExtraLow,
+  Low,
+  Medium,
+  High,
+  BrightnessLast
+};
+BrightnessStateEnum bStates = ExtraLow;
 #pragma endregion
+
+
 
 void setup() {
   Serial.begin(115200);
@@ -104,13 +148,13 @@ void setup() {
 
   Serial.print("Initialising TaskLoopCore0... ");
   xTaskCreatePinnedToCore(
-    LoopCore0,          /* Task function. */
-    "TaskLoopCore0",    /* name of task. */
-    10000,              /* Stack size of task */
-    NULL,               /* parameter of the task */
-    1,                  /* priority of the task */
-    &TaskLoopCore0,     /* Task handle to keep track of created task */
-    0);                 /* pin task to core 0 */          
+    LoopCore0,            /* Task function. */
+    "TaskLoopCore0",      /* name of task. */
+    10000,                /* Stack size of task */
+    NULL,                 /* parameter of the task */
+    1,                    /* priority of the task */
+    &TaskLoopCore0,       /* Task handle to keep track of created task */
+    0);                   /* pin task to core 0 */          
   delay(500); 
 
   Serial.print("Initialising TaskLoopCore1... ");
@@ -145,31 +189,15 @@ void LoopCore0( void * pvParameters ){
  * This task is pinned to core 1
  * It is used to monitor the state of the switches
 */
-
 void LoopCore1( void * pvParameters ){
   Serial.print("TaskLoopCore1 running on core ");
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    checkSwitch(MOTOR_SWITCH, motorSwitchState, []() {
-    Serial.println("Motor Switch Pressed");
-    // Additional actions to perform when the motor switch is pressed
-  });
-
-  checkSwitch(BRIGHTNESS_SWITCH, brightnessSwitchState, []() {
-    Serial.println("Brightness Switch Pressed");
-    // Additional actions to perform when the brightness switch is pressed
-  });
-
-  checkSwitch(COLOUR_SWITCH, colourSwitchState, []() {
-    Serial.println("Colour Switch Pressed");
-    // Additional actions to perform when the colour switch is pressed
-  });
-
-  checkSwitch(STATE_SWITCH, stateSwitchState, []() {
-    Serial.println("State Switch Pressed");
-    // Additional actions to perform when the state switch is pressed
-  });
+    checkSwitch(MOTOR_SWITCH, motorSwitchState, handleMotorSwitch);
+    checkSwitch(BRIGHTNESS_SWITCH, brightnessSwitchState, handleBrightnessSwitch);
+    checkSwitch(COLOUR_SWITCH, colourSwitchState, handleColourSwitch);
+    checkSwitch(STATE_SWITCH, stateSwitchState, handleStateSwitch);
   }
 }
 
@@ -205,4 +233,45 @@ void checkSwitch(int switchPin, bool &switchState, void (*callback)()) {
       timeReleased = currentMillis;
     }
   } // A debounce delay is required for the switch being released as the change in state does not prevent the switch from activating immediately after being released
+}
+
+void handleStateSwitch() {
+  handleSwitch(pStates, PowerStateEnum::PowerLast, "Power");
+}
+
+void handleMotorSwitch() {
+  handleSwitch(mStates, MotorStateEnum::MotorLast, "Motor");
+}
+
+void handleBrightnessSwitch() {
+  handleSwitch(bStates, BrightnessStateEnum::BrightnessLast, "Brightness");
+}
+
+void handleColourSwitch() {
+  handleSwitch(rgbwStates, RGBWStateEnum::LedLast, "Colour");
+}
+
+template <typename EnumType>
+void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switchName) {
+  Serial.print(switchName);
+  Serial.print(" Switch Pressed - ");
+  incrementEnum(enumState, lastEnumValue);
+  Serial.println(static_cast<int>(enumState));
+}
+
+/**
+ * Increments an enumeration value and wraps it around based on the provided range.
+ *
+ * This function increments the given enumeration value and ensures it wraps around
+ * within the range defined by the last enumeration value. The incrementing and wrapping
+ * behavior is calculated as (enumValue + 1) % lastEnumValue.
+ *
+ * @param enumValue A reference to the enumeration value to be incremented.
+ * @param lastEnumValue The last enumeration value in the range, defining the wrapping point.
+ * @return The incremented enumeration value after wrapping.
+ */
+template <typename T>
+T incrementEnum(T &enumValue, T lastEnumValue) {
+  enumValue = static_cast<T>((enumValue + 1) % lastEnumValue);
+  return enumValue;
 }
