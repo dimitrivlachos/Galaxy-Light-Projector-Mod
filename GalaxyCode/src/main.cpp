@@ -534,14 +534,26 @@ void handleStateSwitch() {
 }
 
 void handleMotorSwitch() {
+  // Skip handling the motor switch if the device is powered off
+  if (pStates == PowerStateEnum::PowerOff) {
+    return;
+  }
   handleSwitch(mStates, MotorStateEnum::MotorLast, "Motor");
 }
 
 void handleBrightnessSwitch() {
+  // Skip handling the motor switch if the device is powered off
+  if (pStates == PowerStateEnum::PowerOff) {
+    return;
+  }
   handleSwitch(bStates, BrightnessStateEnum::BrightnessLast, "Brightness");
 }
 
 void handleColourSwitch() {
+  // Skip handling the motor switch if the device is powered off
+  if (pStates == PowerStateEnum::PowerOff) {
+    return;
+  }
   handleSwitch(rgbwStates, RGBWStateEnum::LedLast, "Colour");
 }
 
