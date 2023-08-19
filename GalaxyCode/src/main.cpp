@@ -154,7 +154,7 @@ void setup() {
 
   Serial.println("Initialising Tasks");
 
-  Serial.print("Initialising TaskLoopCore0... ");
+  Serial.print("Initialising TaskLoopCore1... ");
   xTaskCreatePinnedToCore(
     LoopOutputHandle,     /* Task function. */
     "TaskLoopCore1",      /* name of task. */
@@ -162,10 +162,10 @@ void setup() {
     NULL,                 /* parameter of the task */
     1,                    /* priority of the task */
     &TaskLoopCore0,       /* Task handle to keep track of created task */
-    1);                   /* pin task to core 0 */          
+    1);                   /* pin task to core 1 */          
   delay(500); 
 
-  Serial.print("Initialising TaskLoopCore1... ");
+  Serial.print("Initialising TaskLoopCore0... ");
   xTaskCreatePinnedToCore(
     LoopStateHandle,            /* Task function. */
     "TaskLoopCore0",      /* name of task. */
@@ -173,7 +173,7 @@ void setup() {
     NULL,                 /* parameter of the task */
     1,                    /* priority of the task */
     &TaskLoopCore1,       /* Task handle to keep track of created task */
-    0);                   /* pin task to core 1 */
+    0);                   /* pin task to core 0 */
   delay(500); 
 }
 
@@ -184,7 +184,7 @@ void loop() {
 #pragma region Output Handlers
 
 void LoopOutputHandle( void * pvParameters ){
-  Serial.print("TaskLoopCore0 running on core ");
+  Serial.print("TaskLoopCore1 running on core ");
   Serial.println(xPortGetCoreID());
 
   for(;;){
@@ -322,7 +322,7 @@ void setRGBWLed(int red, int green, int blue, int white) {
  * It is used to monitor the state of the switches
 */
 void LoopStateHandle( void * pvParameters ){
-  Serial.print("TaskLoopCore1 running on core ");
+  Serial.print("TaskLoopCore0 running on core ");
   Serial.println(xPortGetCoreID());
 
   for(;;){
