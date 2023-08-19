@@ -193,6 +193,7 @@ void connectToWiFi() {
     wifiConnected = true;
   } else {
     Serial.println("\nFailed to connect to WiFi");
+    WiFi.disconnect();
     // Continue offline
     return;
   }
