@@ -15,9 +15,14 @@ bool stateSwitchState = false;
 
 float brightness = 0.0;
 
+#define MAX_WIFI_ATTEMPTS 10
+#define WIFI_RETRY_DELAY 500
+bool wifiConnected = false;
+
 #pragma region Function Declarations
 void LoopOutputHandle( void * pvParameters );
 void LoopStateHandle( void * pvParameters );
+void connectToWiFi();
 
 void setRGBWLed(int red, int green, int blue, int white);
 void handlePowerState();
@@ -124,36 +129,24 @@ void setup() {
   pinMode(STATE_SWITCH, INPUT_PULLUP);
   #pragma endregion
 
-  #pragma region Wifi and OTA Setup
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(SSID, PASSWORD);
-  WiFi.setHostname(HOSTNAME);
-  WiFi.config(STATIC_IP, GATEWAY, SUBNET);
+  connectToWiFi();
 
-  Serial.println("");
-
-  // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+  if(wifiConnected) {
+    Serial.println("Initialising OTA");
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+      request->send(200, "text/plain", "Hi! This is a sample response.");
+    });
+    AsyncElegantOTA.begin(&server);    // Start AsyncElegantOTA
+    server.begin();
+    Serial.println("HTTP server started");
+    Serial.println("OTA initialised");
   }
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(SSID);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "Hi! This is a sample response.");
-  });
-
-  AsyncElegantOTA.begin(&server);    // Start AsyncElegantOTA
-  server.begin();
-  Serial.println("HTTP server started");
-  #pragma endregion
+  else {
+    Serial.println("WiFi not connected, OTA not initialised. Continuing offline...");
+  }
 
   Serial.println("Initialising Tasks");
-
+  
   Serial.print("Initialising TaskLoopCore1... ");
   xTaskCreatePinnedToCore(
     LoopOutputHandle,     /* Task function. */
@@ -175,6 +168,34 @@ void setup() {
     &TaskLoopCore1,       /* Task handle to keep track of created task */
     0);                   /* pin task to core 0 */
   delay(500); 
+}
+
+void connectToWiFi() {
+  Serial.println("Connecting to WiFi...");
+  
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(SSID, PASSWORD);
+  WiFi.setHostname(HOSTNAME);
+  WiFi.config(STATIC_IP, GATEWAY, SUBNET);
+
+  // Attempt to connect to WiFi
+  int attemptCount = 0;
+  while (WiFi.status() != WL_CONNECTED && attemptCount < MAX_WIFI_ATTEMPTS) {
+    delay(WIFI_RETRY_DELAY);
+    Serial.print(".");
+    attemptCount++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\nConnected to WiFi");
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
+    wifiConnected = true;
+  } else {
+    Serial.println("\nFailed to connect to WiFi");
+    // Continue offline
+    return;
+  }
 }
 
 void loop() {
