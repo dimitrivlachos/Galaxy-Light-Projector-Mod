@@ -169,10 +169,6 @@ void setup() {
   delay(500); 
 }
 
-void loop() {
-  
-}
-
 void LoopCore0( void * pvParameters ){
   Serial.print("TaskLoopCore0 running on core ");
   Serial.println(xPortGetCoreID());
