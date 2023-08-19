@@ -13,9 +13,18 @@ bool brightnessSwitchState = false;
 bool colourSwitchState = false;
 bool stateSwitchState = false;
 
+float brightness = 0.0;
+
 #pragma region Function Declarations
-void LoopCore0( void * pvParameters );
-void LoopCore1( void * pvParameters );
+void LoopOutputHandle( void * pvParameters );
+void LoopStateHandle( void * pvParameters );
+
+void setRGBWLed(int red, int green, int blue, int white);
+void handlePowerState();
+void handleRGBWState();
+void handleMotorState();
+void handleBrightnessState();
+
 void checkSwitch(int switchPin, bool &switchState, void (*callback)());
 void handleStateSwitch();
 void handleMotorSwitch();
@@ -61,7 +70,6 @@ enum PowerStateEnum {
 PowerStateEnum pStates = PowerOff;
 
 enum RGBWStateEnum {
-  LedOff,
   Blue,
   Red,
   Green,
@@ -77,7 +85,7 @@ enum RGBWStateEnum {
   Cycle,
   LedLast
 };
-RGBWStateEnum rgbwStates = LedOff;
+RGBWStateEnum rgbwStates = Blue;
 
 enum MotorStateEnum {
   MotorOff,
@@ -148,37 +156,161 @@ void setup() {
 
   Serial.print("Initialising TaskLoopCore0... ");
   xTaskCreatePinnedToCore(
-    LoopCore0,            /* Task function. */
+    LoopOutputHandle,     /* Task function. */
     "TaskLoopCore0",      /* name of task. */
     10000,                /* Stack size of task */
     NULL,                 /* parameter of the task */
     1,                    /* priority of the task */
     &TaskLoopCore0,       /* Task handle to keep track of created task */
-    0);                   /* pin task to core 0 */          
+    1);                   /* pin task to core 0 */          
   delay(500); 
 
   Serial.print("Initialising TaskLoopCore1... ");
   xTaskCreatePinnedToCore(
-    LoopCore1,            /* Task function. */
+    LoopStateHandle,            /* Task function. */
     "TaskLoopCore1",      /* name of task. */
     10000,                /* Stack size of task */
     NULL,                 /* parameter of the task */
     1,                    /* priority of the task */
     &TaskLoopCore1,       /* Task handle to keep track of created task */
-    1);                   /* pin task to core 1 */
+    0);                   /* pin task to core 1 */
   delay(500); 
 }
 
-void LoopCore0( void * pvParameters ){
+void loop() {
+
+}
+
+void LoopOutputHandle( void * pvParameters ){
   Serial.print("TaskLoopCore0 running on core ");
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    digitalWrite(RED_LED, HIGH);
-    delay(1000);
-    digitalWrite(RED_LED, LOW);
-    delay(1000);
+    handlePowerState();
+    if (pStates == PowerStateEnum::PowerOff) continue;
+    handleBrightnessState();
+    handleRGBWState();
+    handleMotorState();
   }
+}
+
+void handlePowerState() {
+  switch(pStates) {
+    case PowerStateEnum::PowerOff:
+      analogWrite(RED_LED, 0);
+      analogWrite(GREEN_LED, 0);
+      analogWrite(BLUE_LED, 0);
+      analogWrite(WHITE_LED, 0);
+      digitalWrite(PROJECTOR_LED, LOW);
+      analogWrite(MOTOR_BJT, 0);
+      break;
+    case PowerStateEnum::On:
+      
+      break;
+    case PowerStateEnum::Project:
+      digitalWrite(PROJECTOR_LED, HIGH);
+      break;
+    default:
+      Serial.println("Invalid Power State");
+      break;
+  }
+}
+
+void handleBrightnessState() {
+  switch(bStates) {
+    case BrightnessStateEnum::ExtraLow:
+      brightness = 0.25;
+      break;
+    case BrightnessStateEnum::Low:
+      brightness = 0.5;
+      break;
+    case BrightnessStateEnum::Medium:
+      brightness = 0.75;
+      break;
+    case BrightnessStateEnum::High:
+      brightness = 1;
+      break;
+    default:
+      Serial.println("Invalid Brightness State");
+      break;
+  }
+}
+
+// Set the RGBW LED to the appropriate colour multiplied by the brightness
+void handleRGBWState() {
+  switch(rgbwStates) {
+    case RGBWStateEnum::Blue:
+      setRGBWLed(0, 0, 255, 0);
+      break;
+    case RGBWStateEnum::Red:
+      setRGBWLed(255, 0, 0, 0);
+      break;
+    case RGBWStateEnum::Green:
+      setRGBWLed(0, 255, 0, 0);
+      break;
+    case RGBWStateEnum::White:
+      setRGBWLed(0, 0, 0, 255);
+      break;
+    case RGBWStateEnum::BlueRed:
+      setRGBWLed(255, 0, 255, 0);
+      break;
+    case RGBWStateEnum::BlueGreen:
+      setRGBWLed(0, 255, 255, 0);
+      break;
+    case RGBWStateEnum::RedGreen:
+      setRGBWLed(255, 255, 0, 0);
+      break;
+    case RGBWStateEnum::RedWhite:
+      setRGBWLed(255, 0, 0, 255);
+      break;
+    case RGBWStateEnum::GreenWhite:
+      setRGBWLed(0, 255, 0, 255);
+      break;
+    case RGBWStateEnum::RedGreenBlue:
+      setRGBWLed(255, 255, 255, 0);
+      break;
+    case RGBWStateEnum::BlueGreenWhite:
+      setRGBWLed(0, 255, 255, 255);
+      break;
+    case RGBWStateEnum::BlueRedGreenWhite:
+      setRGBWLed(255, 255, 255, 255);
+      break;
+    case RGBWStateEnum::Cycle:
+      // Cycle through the colours using a sine wave on millis()
+      setRGBWLed(
+        127.5 * (1 + sin(millis() / 1000.0)),               // Red
+        127.5 * (1 + sin(millis() / 1000.0 + 2 * PI / 3)),  // Green
+        127.5 * (1 + sin(millis() / 1000.0 + 4 * PI / 3)),  // Blue
+        0);                                                 // White
+      break;
+    default:
+      Serial.println("Invalid RGBW State");
+      break;
+  }
+}
+
+void handleMotorState() {
+  switch(mStates) {
+    case MotorStateEnum::MotorOff:
+      analogWrite(MOTOR_BJT, 0);
+      break;
+    case MotorStateEnum::Fast:
+      analogWrite(MOTOR_BJT, 255);
+      break;
+    case MotorStateEnum::Slow:
+      analogWrite(MOTOR_BJT, 200);
+      break;
+    default:
+      Serial.println("Invalid Motor State");
+      break;
+  }
+}
+
+void setRGBWLed(int red, int green, int blue, int white) {
+  analogWrite(RED_LED, red * brightness);
+  analogWrite(GREEN_LED, green * brightness);
+  analogWrite(BLUE_LED, blue * brightness);
+  analogWrite(WHITE_LED, white * brightness);
 }
 
 #pragma region State Handlers
@@ -186,7 +318,7 @@ void LoopCore0( void * pvParameters ){
  * This task is pinned to core 1
  * It is used to monitor the state of the switches
 */
-void LoopCore1( void * pvParameters ){
+void LoopStateHandle( void * pvParameters ){
   Serial.print("TaskLoopCore1 running on core ");
   Serial.println(xPortGetCoreID());
 
@@ -195,6 +327,9 @@ void LoopCore1( void * pvParameters ){
     checkSwitch(BRIGHTNESS_SWITCH, brightnessSwitchState, handleBrightnessSwitch);
     checkSwitch(COLOUR_SWITCH, colourSwitchState, handleColourSwitch);
     checkSwitch(STATE_SWITCH, stateSwitchState, handleStateSwitch);
+    
+    // Delay for 10ms to prevent the task from hogging the CPU
+    vTaskDelay(10 / portTICK_PERIOD_MS);
   }
 }
 
