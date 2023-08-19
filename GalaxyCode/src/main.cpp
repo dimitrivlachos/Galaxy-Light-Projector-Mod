@@ -181,6 +181,7 @@ void LoopCore0( void * pvParameters ){
   }
 }
 
+#pragma region State Handlers
 /* 
  * This task is pinned to core 1
  * It is used to monitor the state of the switches
@@ -271,3 +272,4 @@ T incrementEnum(T &enumValue, T lastEnumValue) {
   enumValue = static_cast<T>((enumValue + 1) % lastEnumValue);
   return enumValue;
 }
+#pragma endregion
