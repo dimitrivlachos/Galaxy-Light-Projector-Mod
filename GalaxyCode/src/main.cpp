@@ -4,55 +4,72 @@
 #include <ESPAsyncWebServer.h>
 #include <AsyncElegantOTA.h>
 
+// Define and initialize the AsyncWebServer instance
 AsyncWebServer server(80);
+
+// Task handles for the two core loops
 TaskHandle_t TaskLoopCore0;
 TaskHandle_t TaskLoopCore1;
 
+// Switch state variables
 bool motorSwitchState = false;
 bool brightnessSwitchState = false;
 bool colourSwitchState = false;
 bool stateSwitchState = false;
 
+// Brightness level variable
 float brightness = 0.0;
 
+// Maximum number of WiFi connection attempts
 #define MAX_WIFI_ATTEMPTS 10
+// Delay between WiFi connection attempts (in milliseconds)
 #define WIFI_RETRY_DELAY 500
+// Flag indicating WiFi connection status
 bool wifiConnected = false;
 
 #pragma region Function Declarations
-void LoopOutputHandle( void * pvParameters );
-void LoopStateHandle( void * pvParameters );
+// Core task function declarations
+void LoopOutputHandle(void *pvParameters);
+void LoopStateHandle(void *pvParameters);
+
+// Function to connect to WiFi
 void connectToWiFi();
 
+// State handling function declarations
 void setRGBWLed(int red, int green, int blue, int white);
 void handlePowerState();
 void handleRGBWState();
 void handleMotorState();
 void handleBrightnessState();
 
+// Switch handling function declarations
 void checkSwitch(int switchPin, bool &switchState, void (*callback)());
 void handleStateSwitch();
 void handleMotorSwitch();
 void handleBrightnessSwitch();
 void handleColourSwitch();
 
-template <typename T> 
+// Template function for incrementing enums
+template <typename T>
 T incrementEnum(T &enumValue, T lastEnumValue);
 
+// Template function for handling switch state changes
 template <typename EnumType>
 void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switchName);
 #pragma endregion
 
 #pragma region Wifi Settings
-const char* SSID = "ssid";
-const char* PASSWORD = "pass";
-const char* HOSTNAME = "GalaxyProjector-Dev";
+// WiFi configuration settings
+const char *SSID = "ssid";
+const char *PASSWORD = "pass";
+const char *HOSTNAME = "GalaxyProjector-Dev";
 const IPAddress STATIC_IP(192, 168, 0, 50);
 const IPAddress GATEWAY(192, 168, 0, 1);
 const IPAddress SUBNET(255, 255, 255, 0);
 #pragma endregion
 
 #pragma region Pin Definitions
+// Pin definitions for various components
 #define RED_LED 17            // Green wire
 #define WHITE_LED 18          // Blue wire
 #define GREEN_LED 19          // White wire
@@ -66,6 +83,7 @@ const IPAddress SUBNET(255, 255, 255, 0);
 #pragma endregion
 
 #pragma region State Definitions
+// Enumerations for various states
 enum PowerStateEnum {
   PowerOff,
   On,
@@ -160,7 +178,7 @@ void setup() {
 
   Serial.print("Initialising TaskLoopCore0... ");
   xTaskCreatePinnedToCore(
-    LoopStateHandle,            /* Task function. */
+    LoopStateHandle,      /* Task function. */
     "TaskLoopCore0",      /* name of task. */
     10000,                /* Stack size of task */
     NULL,                 /* parameter of the task */
@@ -170,13 +188,26 @@ void setup() {
   delay(500); 
 }
 
+/**
+ * Connects the device to a WiFi network using the provided SSID and password.
+ * 
+ * This function configures the WiFi mode, begins the connection process, sets the hostname,
+ * and configures the IP address (if STATIC_IP is defined). It then attempts to connect
+ * to the WiFi network, displaying connection progress. If the connection is successful,
+ * the function updates the wifiConnected variable to true and prints the device's IP address.
+ * If the connection fails, the function prints an error message, disconnects from WiFi,
+ * and sets wifiConnected to false, allowing the device to continue offline.
+ */
 void connectToWiFi() {
   Serial.println("Connecting to WiFi...");
   
+  // Set WiFi mode and begin connection
   WiFi.mode(WIFI_STA);
   WiFi.begin(SSID, PASSWORD);
   WiFi.setHostname(HOSTNAME);
-  WiFi.config(STATIC_IP, GATEWAY, SUBNET);
+  if (STATIC_IP != NULL && GATEWAY != NULL && SUBNET != NULL) {
+    WiFi.config(STATIC_IP, GATEWAY, SUBNET); // Set IP configuration if STATIC_IP is defined
+  }
 
   // Attempt to connect to WiFi
   int attemptCount = 0;
@@ -190,9 +221,11 @@ void connectToWiFi() {
     Serial.println("\nConnected to WiFi");
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
-    wifiConnected = true;
+    wifiConnected = true; // Update wifiConnected status
   } else {
     Serial.println("\nFailed to connect to WiFi");
+    WiFi.disconnect();    // Disconnect from WiFi
+    wifiConnected = false; // Update wifiConnected status
     // Continue offline
     return;
   }
@@ -203,23 +236,59 @@ void loop() {
 }
 
 #pragma region Output Handlers
-
-void LoopOutputHandle( void * pvParameters ){
+/**
+ * Task function to handle the output loop on a specific core.
+ *
+ * This task function is responsible for managing the output-related operations
+ * of the device. It continuously handles the power state, brightness state,
+ * RGBW state, and motor state according to their respective conditions.
+ *
+ * @param pvParameters A pointer to the parameters passed to the task (not used in this case).
+ */
+void LoopOutputHandle(void *pvParameters) {
+  // Print the core ID for debugging purposes
   Serial.print("TaskLoopCore1 running on core ");
   Serial.println(xPortGetCoreID());
 
-  for(;;){
+  // Enter the main loop
+  for (;;) {
+    // Handle power state regardless of other states
     handlePowerState();
-    if (pStates == PowerStateEnum::PowerOff) continue;
+
+    // Skip handling other states if the device is powered off
+    if (pStates == PowerStateEnum::PowerOff) {
+      continue;
+    }
+
+    // Handle brightness state
     handleBrightnessState();
+
+    // Handle RGBW state
     handleRGBWState();
+
+    // Handle motor state
     handleMotorState();
   }
 }
 
+/**
+ * Handle power state and associated actions.
+ *
+ * This function is responsible for handling the power state of the device and
+ * performing relevant actions based on the current power state. It controls the
+ * LED colors, projector state, and motor state according to the power state.
+ * If the power state is not recognized, an error message is printed to the serial monitor.
+ *
+ * @remarks The function behaviors in different power states:
+ *   - PowerOff: Turns off all LEDs, deactivates the projector and motor.
+ *   - On: Allows other state handlers to be executed, facilitating state transitions.
+ *   - Project: Activates the projector and allows other state handlers to be executed.
+ *     The projector LED will be on in this state.
+ */
 void handlePowerState() {
-  switch(pStates) {
+  switch (pStates) {
     case PowerStateEnum::PowerOff:
+      // Turn off all LEDs and deactivate the projector and motor
       analogWrite(RED_LED, 0);
       analogWrite(GREEN_LED, 0);
       analogWrite(BLUE_LED, 0);
@@ -228,38 +297,69 @@ void handlePowerState() {
       analogWrite(MOTOR_BJT, 0);
       break;
     case PowerStateEnum::On:
-      
+      // Being in this state allows the other states to be handled
+      // Otherwise, the other state handlers will be skipped
       break;
     case PowerStateEnum::Project:
+      // Activate the projector
       digitalWrite(PROJECTOR_LED, HIGH);
+      // Being in this state allows the other states to be handled
+      // Otherwise, the other state handlers will be skipped
+      // In this case, the projector LED will be on as well.
       break;
     default:
+      // Print an error message for unrecognized power state
       Serial.println("Invalid Power State");
       break;
   }
 }
 
+/**
+ * Handle brightness state and set the global brightness level modifier.
+ *
+ * This function is responsible for adjusting the global brightness level modifier of the
+ * device's LED colors based on the current brightness state. The brightness level
+ * is controlled by modifying the 'brightness' variable. If the brightness state is
+ * not recognized, an error message is printed to the serial monitor.
+ *
+ * @remarks The function behaviors in different brightness states:
+ *   - ExtraLow: Sets the brightness to 25% of the maximum level.
+ *   - Low: Sets the brightness to 50% of the maximum level.
+ *   - Medium: Sets the brightness to 75% of the maximum level.
+ *   - High: Sets the brightness to the maximum level (100%).
+ */
 void handleBrightnessState() {
-  switch(bStates) {
+  switch (bStates) {
     case BrightnessStateEnum::ExtraLow:
+      // Set the brightness to 25% of the maximum level
       brightness = 0.25;
       break;
     case BrightnessStateEnum::Low:
+      // Set the brightness to 50% of the maximum level
       brightness = 0.5;
       break;
     case BrightnessStateEnum::Medium:
+      // Set the brightness to 75% of the maximum level
       brightness = 0.75;
       break;
     case BrightnessStateEnum::High:
+      // Set the brightness to the maximum level (100%)
       brightness = 1;
       break;
     default:
+      // Print an error message for unrecognized brightness state
       Serial.println("Invalid Brightness State");
       break;
   }
 }
 
-// Set the RGBW LED to the appropriate colour multiplied by the brightness
+/**
+ * Handle RGBW state and set the RGBW LED colors based on the current state.
+ *
+ * This function is responsible for setting the RGBW LED colors based on the current
+ * RGBW state. The RGBW LED colors are determined by the 'rgbwStates' variable.
+ * If the RGBW state is not recognized, an error message is printed to the serial monitor.
+ */
 void handleRGBWState() {
   switch(rgbwStates) {
     case RGBWStateEnum::Blue:
@@ -312,24 +412,55 @@ void handleRGBWState() {
   }
 }
 
+/**
+ * Handle motor state and control the motor speed based on the current state.
+ *
+ * This function is responsible for controlling the motor speed based on the current
+ * motor state. The motor speed is controlled by adjusting the analog output value
+ * to the MOTOR_BJT pin. If the motor state is not recognized, an error message is
+ * printed to the serial monitor.
+ *
+ * @remarks The function behaviors in different motor states:
+ *   - MotorOff: Turns off the motor by setting analog output to 0.
+ *   - Fast: Sets the motor speed to maximum (255) using analog output.
+ *   - Slow: Sets the motor speed to a moderate value (200) using analog output.
+ */
 void handleMotorState() {
-  switch(mStates) {
+  switch (mStates) {
     case MotorStateEnum::MotorOff:
+      // Turn off the motor by setting analog output to 0
       analogWrite(MOTOR_BJT, 0);
       break;
     case MotorStateEnum::Fast:
+      // Set the motor speed to maximum (255) using analog output
       analogWrite(MOTOR_BJT, 255);
       break;
     case MotorStateEnum::Slow:
+      // Set the motor speed to a moderate value (200) using analog output
       analogWrite(MOTOR_BJT, 200);
       break;
     default:
+      // Print an error message for unrecognized motor state
       Serial.println("Invalid Motor State");
       break;
   }
 }
 
+/**
+ * Set the RGBW LED color and adjust brightness.
+ *
+ * This function sets the color of the RGBW LED by adjusting the analog output values
+ * for each color channel (red, green, blue, white) based on the specified values
+ * and the current brightness level. The brightness factor is multiplied with the
+ * input color values to control the overall brightness of the LED.
+ *
+ * @param red The intensity of the red color channel (0-255).
+ * @param green The intensity of the green color channel (0-255).
+ * @param blue The intensity of the blue color channel (0-255).
+ * @param white The intensity of the white color channel (0-255).
+ */
 void setRGBWLed(int red, int green, int blue, int white) {
+  // Adjust the color intensity using the current brightness level
   analogWrite(RED_LED, red * brightness);
   analogWrite(GREEN_LED, green * brightness);
   analogWrite(BLUE_LED, blue * brightness);
@@ -338,15 +469,21 @@ void setRGBWLed(int red, int green, int blue, int white) {
 #pragma endregion
 
 #pragma region State Handlers
-/* 
- * This task is pinned to core 1
- * It is used to monitor the state of the switches
-*/
+/**
+ * Task function for monitoring and handling switch states.
+ *
+ * This task function is responsible for continuously monitoring the states of various switches
+ * and invoking their corresponding handler functions when the switches are pressed or released.
+ * The function includes a delay to prevent excessive CPU usage within the loop.
+ *
+ * @param pvParameters Pointer to task parameters (not used in this case).
+ */
 void LoopStateHandle( void * pvParameters ){
-  Serial.print("TaskLoopCore0 running on core ");
+  Serial.print("TaskLoopCore1 running on core ");
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    // Check the states of various switches and invoke their handlers
     checkSwitch(MOTOR_SWITCH, motorSwitchState, handleMotorSwitch);
     checkSwitch(BRIGHTNESS_SWITCH, brightnessSwitchState, handleBrightnessSwitch);
     checkSwitch(COLOUR_SWITCH, colourSwitchState, handleColourSwitch);
@@ -356,6 +493,7 @@ void LoopStateHandle( void * pvParameters ){
     vTaskDelay(10 / portTICK_PERIOD_MS);
   }
 }
+
 
 /**
  * Checks the state of a switch connected to the specified pin and updates the switch state accordingly.
@@ -396,17 +534,40 @@ void handleStateSwitch() {
 }
 
 void handleMotorSwitch() {
+  // Skip handling the motor switch if the device is powered off
+  if (pStates == PowerStateEnum::PowerOff) {
+    return;
+  }
   handleSwitch(mStates, MotorStateEnum::MotorLast, "Motor");
 }
 
 void handleBrightnessSwitch() {
+  // Skip handling the motor switch if the device is powered off
+  if (pStates == PowerStateEnum::PowerOff) {
+    return;
+  }
   handleSwitch(bStates, BrightnessStateEnum::BrightnessLast, "Brightness");
 }
 
 void handleColourSwitch() {
+  // Skip handling the motor switch if the device is powered off
+  if (pStates == PowerStateEnum::PowerOff) {
+    return;
+  }
   handleSwitch(rgbwStates, RGBWStateEnum::LedLast, "Colour");
 }
 
+/**
+ * Handle switch state change for an enumerated state.
+ *
+ * This function is used to handle the change of an enumerated state associated with a switch press.
+ * It increments the current state within the provided enumeration range and outputs information
+ * about the switch press to the serial monitor.
+ *
+ * @param enumState A reference to the enumerated state variable to be modified.
+ * @param lastEnumValue The last value in the enumeration range, used for wrapping.
+ * @param switchName The name of the switch associated with this handler.
+ */
 template <typename EnumType>
 void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switchName) {
   Serial.print(switchName);
@@ -414,6 +575,7 @@ void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switc
   incrementEnum(enumState, lastEnumValue);
   Serial.println(static_cast<int>(enumState));
 }
+
 
 /**
  * Increments an enumeration value and wraps it around based on the provided range.
