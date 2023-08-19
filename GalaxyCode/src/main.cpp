@@ -21,8 +21,10 @@ void handleStateSwitch();
 void handleMotorSwitch();
 void handleBrightnessSwitch();
 void handleColourSwitch();
+
 template <typename T> 
 T incrementEnum(T &enumValue, T lastEnumValue);
+
 template <typename EnumType>
 void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switchName);
 #pragma endregion
@@ -94,8 +96,6 @@ enum BrightnessStateEnum {
 };
 BrightnessStateEnum bStates = ExtraLow;
 #pragma endregion
-
-
 
 void setup() {
   Serial.begin(115200);
