@@ -42,7 +42,7 @@ void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switc
 const char* SSID = "ssid";
 const char* PASSWORD = "pass";
 const char* HOSTNAME = "GalaxyProjector-Dev";
-const IPAddress IP(192, 168, 0, 50);
+const IPAddress STATIC_IP(192, 168, 0, 50);
 const IPAddress GATEWAY(192, 168, 0, 1);
 const IPAddress SUBNET(255, 255, 255, 0);
 #pragma endregion
@@ -128,7 +128,7 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(SSID, PASSWORD);
   WiFi.setHostname(HOSTNAME);
-  WiFi.config(IP, GATEWAY, SUBNET);
+  WiFi.config(STATIC_IP, GATEWAY, SUBNET);
 
   Serial.println("");
 
