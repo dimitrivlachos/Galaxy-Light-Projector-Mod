@@ -10,6 +10,7 @@
             "includePath": [
                 "C:/Users/dimit/Dropbox/Documents/Arduino/Galaxy-Light-Projector-Mod/GalaxyCode/include",
                 "C:/Users/dimit/Dropbox/Documents/Arduino/Galaxy-Light-Projector-Mod/GalaxyCode/src",
+                "C:/Users/dimit/Dropbox/Documents/Arduino/Galaxy-Light-Projector-Mod/GalaxyCode/.pio/libdeps/esp32dev/Arduino_JSON/src",
                 "C:/Users/dimit/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                 "C:/Users/dimit/Dropbox/Documents/Arduino/Galaxy-Light-Projector-Mod/GalaxyCode/.pio/libdeps/esp32dev/ESPAsyncWebServer-esphome/src",
                 "C:/Users/dimit/Dropbox/Documents/Arduino/Galaxy-Light-Projector-Mod/GalaxyCode/.pio/libdeps/esp32dev/AsyncElegantOTA/src",
@@ -246,6 +247,7 @@
                 "path": [
                     "C:/Users/dimit/Dropbox/Documents/Arduino/Galaxy-Light-Projector-Mod/GalaxyCode/include",
                     "C:/Users/dimit/Dropbox/Documents/Arduino/Galaxy-Light-Projector-Mod/GalaxyCode/src",
+                    "C:/Users/dimit/Dropbox/Documents/Arduino/Galaxy-Light-Projector-Mod/GalaxyCode/.pio/libdeps/esp32dev/Arduino_JSON/src",
                     "C:/Users/dimit/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                     "C:/Users/dimit/Dropbox/Documents/Arduino/Galaxy-Light-Projector-Mod/GalaxyCode/.pio/libdeps/esp32dev/ESPAsyncWebServer-esphome/src",
                     "C:/Users/dimit/Dropbox/Documents/Arduino/Galaxy-Light-Projector-Mod/GalaxyCode/.pio/libdeps/esp32dev/AsyncElegantOTA/src",

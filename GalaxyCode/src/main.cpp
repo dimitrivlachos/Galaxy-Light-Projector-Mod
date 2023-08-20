@@ -3,6 +3,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <AsyncElegantOTA.h>
+#include <Arduino_Json.h>
 
 // Define and initialize the AsyncWebServer instance
 AsyncWebServer server(80);
@@ -64,6 +65,8 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
              void *arg, uint8_t *data, size_t len);
 void handleWebSocketMessage(void *arg, uint8_t *payload, size_t length);
 void initWebSocket();
+String generateJsonForStates();
+void updateClients();
 #pragma endregion
 
 #pragma region Wifi Settings
@@ -136,12 +139,13 @@ enum BrightnessStateEnum {
 BrightnessStateEnum bStates = ExtraLow;
 #pragma endregion
 
+#pragma region HTML
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>ESP Web Server</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Galaxy Projector</title>
+  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:,">
   <style>
     html {
@@ -215,84 +219,107 @@ const char index_html[] PROGMEM = R"rawliteral(
     }
 </style>
 </head>
-<div class="topnav">
-    <h1>Galaxy Projector</h1>
-  </div>
-  <div class="content">
-    <div class="grid-container">
-      <div class="card">
-        <h2>Power</h2>
-        <p><button id="Power" class="button">⚡️</button></p>
-      </div>
-      <div class="card">
-        <h2>Brightness</h2>
-        <p><button id="Brightness" class="button">☀️</button></p>
-      </div>
-      <div class="card">
-        <h2>Colour</h2>
-        <p><button id="Colour" class="button">🌈</button></p>
-      </div>
-      <div class="card">
-        <h2>Spin</h2>
-        <p><button id="Motor" class="button">💫</button></p>
-      </div>
-      <!-- Add more cards here -->
+<body>
+    <div class="topnav">
+      <h1>🌠 Galaxy Projector 🌌</h1>
     </div>
-  </div>
-  <script>
-    var gateway = `ws://${window.location.hostname}/ws`;
-    var websocket;
-    window.addEventListener('load', onLoad);
-    
-    function initWebSocket() {
-      console.log('Trying to open a WebSocket connection...');
-      websocket = new WebSocket(gateway);
-      websocket.onopen    = onOpen;
-      websocket.onclose   = onClose;
-      websocket.onmessage = onMessage;
-    }
-    
-    function onOpen(event) {
-      console.log('Connection opened');
-    }
-    
-    function onClose(event) {
-      console.log('Connection closed');
-      setTimeout(initWebSocket, 2000);
-    }
-    
-    function onMessage(event) {
-      console.log(`Received a message from server: ${event.data}`);
-    }
-    
-    function onLoad(event) {
-      initWebSocket();
-      initButtons();
-    }
-    
-    function initButtons() {
-      // Initialize the buttons with their respective ids and listeners
-      addButtonListener("Power");
-      addButtonListener("Brightness");
-      addButtonListener("Colour");
-      addButtonListener("Motor");
-    }
-    
-    function addButtonListener(buttonId) {
-      var button = document.getElementById(buttonId);
-      button.addEventListener('click', function() {
-        toggle(buttonId);
-      });
-      button.buttonId = buttonId; // Store the button's id as a property for later use
-    }
-    
-    function toggle(buttonId) {
-      websocket.send(buttonId); // Send the button's id as a message to the ESP
-    }
-  </script>
+    <div class="content">
+      <div class="grid-container">
+        <div class="card">
+          <h2>Power</h2>
+          <p><button id="Power" class="button">⚡️</button></p>
+          <p class="state" id="PowerState">State: </p>
+        </div>
+        <div class="card">
+          <h2>Brightness</h2>
+          <p><button id="Brightness" class="button">☀️</button></p>
+          <p class="state" id="BrightnessState">State: </p>
+        </div>
+        <div class="card">
+          <h2>Colour</h2>
+          <p><button id="Colour" class="button">🌈</button></p>
+          <p class="state" id="ColourState">State: </p>
+        </div>
+        <div class="card">
+          <h2>Spin</h2>
+          <p><button id="Motor" class="button">💫</button></p>
+          <p class="state" id="MotorState">State: </p>
+        </div>
+        <!-- Add more cards here -->
+      </div>
+    </div>
+    <script>
+      var gateway = `ws://${window.location.hostname}/ws`;
+      var websocket;
+      window.addEventListener('load', onLoad);
+  
+      function initWebSocket() {
+        console.log('Trying to open a WebSocket connection...');
+        websocket = new WebSocket(gateway);
+        websocket.onopen    = onOpen;
+        websocket.onclose   = onClose;
+        websocket.onmessage = onMessage;
+      }
+  
+      function onOpen(event) {
+        console.log('Connection opened');
+        // Update the state of the buttons with the data received from the server
+        sendMessage('getStates');
+      }
+  
+      function onClose(event) {
+        console.log('Connection closed');
+        setTimeout(initWebSocket, 2000);
+      }
+  
+      function onMessage(event) {
+        console.log(`Received a message from server: ${event.data}`);
+        try {
+          var jsonData = JSON.parse(event.data);
+          updateStates(jsonData);
+        } catch (error) {
+          console.error('Error parsing JSON:', error);
+        }
+      }
+  
+      function updateStates(data) {
+        for (var key in data) {
+          var stateElement = document.getElementById(key + 'State');
+          if (stateElement) {
+            stateElement.textContent = 'State: ' + data[key];
+          }
+        }
+      }
+  
+      function onLoad(event) {
+        initWebSocket();
+        initButtons();
+      }
+  
+      function initButtons() {
+        // Initialize the buttons with their respective ids and listeners
+        addButtonListener("Power");
+        addButtonListener("Brightness");
+        addButtonListener("Colour");
+        addButtonListener("Motor");
+      }
+  
+      function addButtonListener(buttonId) {
+        var button = document.getElementById(buttonId);
+        button.addEventListener('click', function() {
+          sendMessage(buttonId);
+        });
+        button.buttonId = buttonId; // Store the button's id as a property for later use
+      }
+  
+      function sendMessage(buttonId) {
+        websocket.send(buttonId); // Send the button's id as a message to the ESP
+      }
+    </script>
 </body>
 </html>
 )rawliteral";
+#pragma endregion
 
 void setup() {
   Serial.begin(115200);
@@ -358,6 +385,9 @@ void setup() {
     &TaskLoopCore1,       /* Task handle to keep track of created task */
     0);                   /* pin task to core 0 */
   delay(500); 
+
+  Serial.println("Tasks initialised");
+  Serial.println("Setup complete!");
 }
 
 /**
@@ -744,9 +774,11 @@ void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switc
   Serial.print(" Switch Pressed - ");
   incrementEnum(enumState, lastEnumValue);
   Serial.println(static_cast<int>(enumState));
-  if(wifiConnected) {
-    ws.textAll(String(switchName)); // Send the switch name to all connected clients
-  }
+
+  // Guard against sending WebSocket messages before the connection is established
+  if(!wifiConnected) return; // If WiFi is not connected, WebSocket is not initialised
+  if(!ws.count()) return; // If there are no connected clients, update is not required
+    updateClients();
 }
 
 
@@ -804,11 +836,40 @@ void handleWebSocketMessage(void *arg, uint8_t *payload, size_t length) {
     handleColourSwitch();
   } else if (message == "Motor") {
     handleMotorSwitch();
+  } else if (message == "getStates") {
+    updateClients();
+  } else {
+    Serial.println("Invalid WebSocket message");
   }
 }
 
 void initWebSocket() {
   ws.onEvent(onEvent);
   server.addHandler(&ws);
+}
+
+String generateJsonForStates() {
+  // Create a JSON object containing the current states
+  JSONVar states;
+
+  // Add the states to the JSON object
+  states["Power"] = static_cast<int>(pStates);
+  states["Brightness"] = static_cast<int>(bStates);
+  states["Colour"] = static_cast<int>(rgbwStates);
+  states["Motor"] = static_cast<int>(mStates);
+
+  // Convert the JSON object to a string
+  String json = JSON.stringify(states);
+
+  // Return the JSON string
+  return json;
+}
+
+void updateClients() {
+  // Generate a JSON string containing the current states
+  String json = generateJsonForStates();
+
+  // Send the JSON string to all connected clients
+  ws.textAll(json);
 }
 #pragma endregion
