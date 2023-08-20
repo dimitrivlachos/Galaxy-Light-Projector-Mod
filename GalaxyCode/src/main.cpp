@@ -149,35 +149,39 @@ const char index_html[] PROGMEM = R"rawliteral(
   <link rel="icon" href="data:,">
   <style>
     html {
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: 'Arial', sans-serif;
       text-align: center;
+      background-color: #111111;
+      color: #ffffff;
     }
     h1 {
-      font-size: 1.8rem;
-      color: white;
+      font-size: 2rem;
+      margin: 1rem;
     }
     h2 {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: bold;
-      color: #143642;
+      color: #00bfff;
     }
     .topnav {
       overflow: hidden;
-      background-color: #143642;
+      background-color: #111111;
+      padding: 1rem;
     }
     body {
       margin: 0;
     }
     .content {
-      padding: 30px;
-      max-width: 600px;
+      padding: 2rem;
+      max-width: 800px;
       margin: 0 auto;
     }
     .card {
-      background-color: #F8F7F9;
-      box-shadow: 2px 2px 12px 1px rgba(140, 140, 140, .5);
-      padding-top: 10px;
-      padding-bottom: 20px;
+      background-color: #1a1a1a;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
     }
     .button {
       padding: 15px 50px;
@@ -185,72 +189,66 @@ const char index_html[] PROGMEM = R"rawliteral(
       text-align: center;
       outline: none;
       color: #fff;
-      background-color: #0f8b8d;
+      background-color: #00bfff;
       border: none;
       border-radius: 5px;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      cursor: pointer;
     }
-    /*.button:hover {background-color: #0f8b8d}*/
     .button:active {
-      background-color: #0f8b8d;
-      box-shadow: 2 2px #CDCDCD;
+      background-color: #0099cc;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
       transform: translateY(2px);
     }
     .state {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       color: #8c8c8c;
-      font-weight: bold;
-    }
-    .button-group {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
     }
     .grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 10px;
+      gap: 20px;
+      margin-top: 1rem;
     }
-</style>
+  </style>
 </head>
 <body>
-    <div class="topnav">
-      <h1>🌠 Galaxy Projector 🌌</h1>
-    </div>
-    <div class="content">
-      <div class="grid-container">
-        <div class="card">
-          <h2>Power</h2>
-          <p><button id="Power" class="button">⚡️</button></p>
-          <p class="state" id="PowerState">State: </p>
-        </div>
-        <div class="card">
-          <h2>Brightness</h2>
-          <p><button id="Brightness" class="button">☀️</button></p>
-          <p class="state" id="BrightnessState">State: </p>
-        </div>
-        <div class="card">
-          <h2>Colour</h2>
-          <p><button id="Colour" class="button">🌈</button></p>
-          <p class="state" id="ColourState">State: </p>
-        </div>
-        <div class="card">
-          <h2>Spin</h2>
-          <p><button id="Motor" class="button">💫</button></p>
-          <p class="state" id="MotorState">State: </p>
-        </div>
-        <!-- Add more cards here -->
+  <div class="topnav">
+    <h1>🌠 Galaxy Projector 🌌</h1>
+  </div>
+  <div class="content">
+    <div class="grid-container">
+      <div class="card">
+        <h2>Power</h2>
+        <p><button id="Power" class="button">⚡️</button></p>
+        <p class="state" id="PowerState">State: </p>
       </div>
+      <div class="card">
+        <h2>Brightness</h2>
+        <p><button id="Brightness" class="button">☀️</button></p>
+        <p class="state" id="BrightnessState">State: </p>
+      </div>
+      <div class="card">
+        <h2>Colour</h2>
+        <p><button id="Colour" class="button">🌈</button></p>
+        <p class="state" id="ColourState">State: </p>
+      </div>
+      <div class="card">
+        <h2>Spin</h2>
+        <p><button id="Motor" class="button">💫</button></p>
+        <p class="state" id="MotorState">State: </p>
+      </div>
+      <!-- Add more cards here -->
     </div>
+  </div>
     <script>
       var gateway = `ws://${window.location.hostname}/ws`;
       var websocket;
+      var statesDict = {
+        "Power": ['🌑', '🌓', '🌕'],
+        "Brightness": ['🌒', '🌓', '🌔', '🌕'],
+        "Colour": ['🔵', '🔴', '🟢', '⚪️', '🔵🔴', '🔵🟢', '🔴🟢', '🔴⚪️', '🟢⚪️', '🔴🟢🔵', '🔵🟢⚪️', '🔵🔴🟢⚪️', '🔄'],
+        "Motor": ['🛑', '🐇', '🐢']
+      };
       window.addEventListener('load', onLoad);
   
       function initWebSocket() {
@@ -286,7 +284,7 @@ const char index_html[] PROGMEM = R"rawliteral(
         for (var key in data) {
           var stateElement = document.getElementById(key + 'State');
           if (stateElement) {
-            stateElement.textContent = 'State: ' + data[key];
+            stateElement.textContent = 'State: ' + statesDict[key][data[key]];
           }
         }
       }
