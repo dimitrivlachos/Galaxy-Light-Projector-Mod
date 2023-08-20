@@ -6,6 +6,8 @@
 
 // Define and initialize the AsyncWebServer instance
 AsyncWebServer server(80);
+// Define and initialize the AsyncWebSocket instance
+AsyncWebSocket ws("/ws");
 
 // Task handles for the two core loops
 TaskHandle_t TaskLoopCore0;
@@ -56,6 +58,12 @@ T incrementEnum(T &enumValue, T lastEnumValue);
 // Template function for handling switch state changes
 template <typename EnumType>
 void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switchName);
+
+// WebSocket handling function declarations
+void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
+             void *arg, uint8_t *data, size_t len);
+void handleWebSocketMessage(void *arg, uint8_t *payload, size_t length);
+void initWebSocket();
 #pragma endregion
 
 #pragma region Wifi Settings
@@ -128,6 +136,164 @@ enum BrightnessStateEnum {
 BrightnessStateEnum bStates = ExtraLow;
 #pragma endregion
 
+const char index_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>ESP Web Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <style>
+    html {
+      font-family: Arial, Helvetica, sans-serif;
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.8rem;
+      color: white;
+    }
+    h2 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #143642;
+    }
+    .topnav {
+      overflow: hidden;
+      background-color: #143642;
+    }
+    body {
+      margin: 0;
+    }
+    .content {
+      padding: 30px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .card {
+      background-color: #F8F7F9;
+      box-shadow: 2px 2px 12px 1px rgba(140, 140, 140, .5);
+      padding-top: 10px;
+      padding-bottom: 20px;
+    }
+    .button {
+      padding: 15px 50px;
+      font-size: 24px;
+      text-align: center;
+      outline: none;
+      color: #fff;
+      background-color: #0f8b8d;
+      border: none;
+      border-radius: 5px;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    /*.button:hover {background-color: #0f8b8d}*/
+    .button:active {
+      background-color: #0f8b8d;
+      box-shadow: 2 2px #CDCDCD;
+      transform: translateY(2px);
+    }
+    .state {
+      font-size: 1.5rem;
+      color: #8c8c8c;
+      font-weight: bold;
+    }
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 10px;
+    }
+</style>
+</head>
+<div class="topnav">
+    <h1>Galaxy Projector</h1>
+  </div>
+  <div class="content">
+    <div class="grid-container">
+      <div class="card">
+        <h2>Power</h2>
+        <p><button id="Power" class="button">⚡️</button></p>
+      </div>
+      <div class="card">
+        <h2>Brightness</h2>
+        <p><button id="Brightness" class="button">☀️</button></p>
+      </div>
+      <div class="card">
+        <h2>Colour</h2>
+        <p><button id="Colour" class="button">🌈</button></p>
+      </div>
+      <div class="card">
+        <h2>Spin</h2>
+        <p><button id="Motor" class="button">💫</button></p>
+      </div>
+      <!-- Add more cards here -->
+    </div>
+  </div>
+  <script>
+    var gateway = `ws://${window.location.hostname}/ws`;
+    var websocket;
+    window.addEventListener('load', onLoad);
+    
+    function initWebSocket() {
+      console.log('Trying to open a WebSocket connection...');
+      websocket = new WebSocket(gateway);
+      websocket.onopen    = onOpen;
+      websocket.onclose   = onClose;
+      websocket.onmessage = onMessage;
+    }
+    
+    function onOpen(event) {
+      console.log('Connection opened');
+    }
+    
+    function onClose(event) {
+      console.log('Connection closed');
+      setTimeout(initWebSocket, 2000);
+    }
+    
+    function onMessage(event) {
+      console.log(`Received a message from server: ${event.data}`);
+    }
+    
+    function onLoad(event) {
+      initWebSocket();
+      initButtons();
+    }
+    
+    function initButtons() {
+      // Initialize the buttons with their respective ids and listeners
+      addButtonListener("Power");
+      addButtonListener("Brightness");
+      addButtonListener("Colour");
+      addButtonListener("Motor");
+    }
+    
+    function addButtonListener(buttonId) {
+      var button = document.getElementById(buttonId);
+      button.addEventListener('click', function() {
+        toggle(buttonId);
+      });
+      button.buttonId = buttonId; // Store the button's id as a property for later use
+    }
+    
+    function toggle(buttonId) {
+      websocket.send(buttonId); // Send the button's id as a message to the ESP
+    }
+  </script>
+</body>
+</html>
+)rawliteral";
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Booting");
@@ -150,9 +316,15 @@ void setup() {
   connectToWiFi();
 
   if(wifiConnected) {
+    // Initialise WebSocket
+    Serial.println("Initialising WebSocket");
+    initWebSocket();
+    Serial.println("WebSocket initialised");
+
+    // Initialise OTA
     Serial.println("Initialising OTA");
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-      request->send(200, "text/plain", "Hi! This is a sample response.");
+      request->send_P(200, "text/html", index_html);
     });
     AsyncElegantOTA.begin(&server);    // Start AsyncElegantOTA
     server.begin();
@@ -160,7 +332,7 @@ void setup() {
     Serial.println("OTA initialised");
   }
   else {
-    Serial.println("WiFi not connected, OTA not initialised. Continuing offline...");
+    Serial.println("WiFi not connected, OTA not initialised. WebSocket not initialised. Continuing offline...");
   }
 
   Serial.println("Initialising Tasks");
@@ -205,9 +377,7 @@ void connectToWiFi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(SSID, PASSWORD);
   WiFi.setHostname(HOSTNAME);
-  if (STATIC_IP != NULL && GATEWAY != NULL && SUBNET != NULL) {
-    WiFi.config(STATIC_IP, GATEWAY, SUBNET); // Set IP configuration if STATIC_IP is defined
-  }
+  WiFi.config(STATIC_IP, GATEWAY, SUBNET);
 
   // Attempt to connect to WiFi
   int attemptCount = 0;
@@ -232,7 +402,7 @@ void connectToWiFi() {
 }
 
 void loop() {
-
+  ws.cleanupClients(); // Cleanup disconnected clients
 }
 
 #pragma region Output Handlers
@@ -574,6 +744,9 @@ void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switc
   Serial.print(" Switch Pressed - ");
   incrementEnum(enumState, lastEnumValue);
   Serial.println(static_cast<int>(enumState));
+  if(wifiConnected) {
+    ws.textAll(String(switchName)); // Send the switch name to all connected clients
+  }
 }
 
 
@@ -592,5 +765,50 @@ template <typename T>
 T incrementEnum(T &enumValue, T lastEnumValue) {
   enumValue = static_cast<T>((enumValue + 1) % lastEnumValue);
   return enumValue;
+}
+#pragma endregion
+
+#pragma region Interface and WebSocket Handlers
+void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
+             void *arg, uint8_t *data, size_t len) {
+  switch (type) {
+    case WS_EVT_CONNECT:
+      Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+      break;
+    case WS_EVT_DISCONNECT:
+      Serial.printf("WebSocket client #%u disconnected\n", client->id());
+      break;
+    case WS_EVT_DATA:
+      Serial.printf("WebSocket client #%u data received\n", client->id());
+      handleWebSocketMessage(arg, data, len);
+      break;
+    case WS_EVT_PONG:
+    case WS_EVT_ERROR:
+      break;
+  }
+}
+
+void handleWebSocketMessage(void *arg, uint8_t *payload, size_t length) {
+  String message = "";
+  for (size_t i = 0; i < length; i++) {
+    message += (char)payload[i];
+  }
+
+  Serial.println(message);
+
+  if (message == "Power") {
+    handleStateSwitch();
+  } else if (message == "Brightness") {
+    handleBrightnessSwitch();
+  } else if (message == "Colour") {
+    handleColourSwitch();
+  } else if (message == "Motor") {
+    handleMotorSwitch();
+  }
+}
+
+void initWebSocket() {
+  ws.onEvent(onEvent);
+  server.addHandler(&ws);
 }
 #pragma endregion
