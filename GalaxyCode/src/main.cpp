@@ -734,7 +734,7 @@ void handleStateSwitch() {
 void handleMotorSwitch() {
   // Skip handling the motor switch if the device is powered off
   //if (pStates == PowerStateEnum::PowerOff) return;
-  
+
   handleSwitch(mStates, MotorStateEnum::MotorLast, "Motor");
 }
 
