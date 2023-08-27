@@ -9,7 +9,7 @@ Modification of a consumer night-light projector, converting it into a smart dev
 
 ## Custom PCB
 
-### KiCad Render
+### KiCad Render (Revision 1.0)
 <table>
   <tr>
     <td>Front</td>
@@ -23,7 +23,7 @@ Modification of a consumer night-light projector, converting it into a smart dev
     <td><img src="PCB/Examples/Back.jpg"></td>
  </table>
 
- ### Fabrication Render
+ ### Fabrication Render (Revision 1.0)
   <table>
     <tr>
       <td>Front</td>
