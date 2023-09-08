@@ -1792,7 +1792,7 @@
     (uuid fc80547b-db0c-4824-b867-c17cd852f2b6)
   )
 
-  (text "1.0" (at 267.97 194.31 0)
+  (text "1.1" (at 267.97 194.31 0)
     (effects (font (size 1.5 1.5)) (justify left bottom))
     (uuid 0248404f-27a1-48c1-9cd3-333dd8845a01)
   )
