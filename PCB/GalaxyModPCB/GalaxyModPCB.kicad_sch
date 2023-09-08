@@ -780,29 +780,29 @@
         )
       )
     )
-    (symbol "Transistor_BJT:BCP56" (pin_names (offset 0) hide) (in_bom yes) (on_board yes)
+    (symbol "Transistor_BJT:BC817" (pin_names (offset 0) hide) (in_bom yes) (on_board yes)
       (property "Reference" "Q" (at 5.08 1.905 0)
         (effects (font (size 1.27 1.27)) (justify left))
       )
-      (property "Value" "BCP56" (at 5.08 0 0)
+      (property "Value" "BC817" (at 5.08 0 0)
         (effects (font (size 1.27 1.27)) (justify left))
       )
-      (property "Footprint" "Package_TO_SOT_SMD:SOT-223-3_TabPin2" (at 5.08 -1.905 0)
+      (property "Footprint" "Package_TO_SOT_SMD:SOT-23" (at 5.08 -1.905 0)
         (effects (font (size 1.27 1.27) italic) (justify left) hide)
       )
-      (property "Datasheet" "http://cache.nxp.com/documents/data_sheet/BCP56_BCX56_BC56PA.pdf?pspll=1" (at 0 0 0)
+      (property "Datasheet" "https://www.onsemi.com/pub/Collateral/BC818-D.pdf" (at 0 0 0)
         (effects (font (size 1.27 1.27)) (justify left) hide)
       )
       (property "ki_keywords" "NPN Transistor" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (property "ki_description" "1A Ic, 80V Vce, NPN Medium Power Transistor, SOT-223" (at 0 0 0)
+      (property "ki_description" "0.8A Ic, 45V Vce, NPN Transistor, SOT-23" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (property "ki_fp_filters" "SOT?223*" (at 0 0 0)
+      (property "ki_fp_filters" "SOT?23*" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (symbol "BCP56_0_1"
+      (symbol "BC817_0_1"
         (polyline
           (pts
             (xy 0.635 0.635)
@@ -845,22 +845,18 @@
           (fill (type none))
         )
       )
-      (symbol "BCP56_1_1"
+      (symbol "BC817_1_1"
         (pin input line (at -5.08 0 0) (length 5.715)
           (name "B" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at 2.54 5.08 270) (length 2.54)
-          (name "C" (effects (font (size 1.27 1.27))))
-          (number "2" (effects (font (size 1.27 1.27))))
-        )
         (pin passive line (at 2.54 -5.08 90) (length 2.54)
           (name "E" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at 2.54 5.08 270) (length 2.54) hide
+        (pin passive line (at 2.54 5.08 270) (length 2.54)
           (name "C" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
       )
     )
@@ -1843,7 +1839,7 @@
     )
   )
 
-  (symbol (lib_id "Transistor_BJT:BCP56") (at 213.36 106.68 0) (unit 1)
+  (symbol (lib_id "Transistor_BJT:BC817") (at 213.36 106.68 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 07c21dd4-4418-486e-86c7-56e99ce42fe6)
     (property "Reference" "Q1" (at 218.44 105.4099 0)
@@ -1861,7 +1857,6 @@
     (pin "1" (uuid e43bf505-af01-4895-8af0-fa6c4cbcf8f8))
     (pin "2" (uuid 72abeaca-309f-4e70-bf92-65ee4e267e94))
     (pin "3" (uuid 4adba7bc-1e4f-4723-9d58-af1c79531a01))
-    (pin "4" (uuid 2fd8e0ac-4283-4e25-ab1f-474b80ef63dc))
     (instances
       (project "GalaxyModPCB"
         (path "/74bbbacb-c982-4615-b32e-142a16798fae"
@@ -2114,7 +2109,7 @@
     )
   )
 
-  (symbol (lib_id "Transistor_BJT:BCP56") (at 156.21 177.8 90) (mirror x) (unit 1)
+  (symbol (lib_id "Transistor_BJT:BC817") (at 156.21 177.8 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 1f2fbb51-c6f1-4be2-90d7-da05d7e7bccb)
     (property "Reference" "Q5" (at 156.21 184.15 90)
@@ -2132,7 +2127,6 @@
     (pin "1" (uuid a077cedd-47ef-44e9-b5c8-1efcca9cbd30))
     (pin "2" (uuid 0c28d4f8-489e-469f-b785-e324014c30e1))
     (pin "3" (uuid 1fcaef6d-e358-4f7a-859c-90bb3bfbda67))
-    (pin "4" (uuid 707060bc-4044-4679-bcb0-f2894ecdce69))
     (instances
       (project "GalaxyModPCB"
         (path "/74bbbacb-c982-4615-b32e-142a16798fae"
@@ -2220,7 +2214,7 @@
     )
   )
 
-  (symbol (lib_id "Transistor_BJT:BCP56") (at 220.98 121.92 0) (unit 1)
+  (symbol (lib_id "Transistor_BJT:BC817") (at 220.98 121.92 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 23a89ff5-66a4-4fb3-8361-6570fa9b906b)
     (property "Reference" "Q2" (at 226.06 120.6499 0)
@@ -2238,7 +2232,6 @@
     (pin "1" (uuid acac1746-e2c1-41be-bd97-5e0b783d517e))
     (pin "2" (uuid 8ad44ca3-3ef0-4a18-a1ea-3cf24ff36944))
     (pin "3" (uuid eef917be-bf50-4c76-b414-b64a63d7e816))
-    (pin "4" (uuid 82830841-2782-4f8a-9f85-0fa4c05121bb))
     (instances
       (project "GalaxyModPCB"
         (path "/74bbbacb-c982-4615-b32e-142a16798fae"
@@ -2274,7 +2267,7 @@
     )
   )
 
-  (symbol (lib_id "Transistor_BJT:BCP56") (at 236.22 152.4 0) (unit 1)
+  (symbol (lib_id "Transistor_BJT:BC817") (at 236.22 152.4 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 3a5c0131-d5ac-432a-ba39-0c0a8fc351bb)
     (property "Reference" "Q4" (at 241.3 151.1299 0)
@@ -2292,7 +2285,6 @@
     (pin "1" (uuid b86a5afa-f081-49a6-a986-8a7de5102758))
     (pin "2" (uuid d69e4c91-c236-4576-a27e-3e9d390b3f3e))
     (pin "3" (uuid 6c8b9fb8-fd7e-461e-8951-6c379c32416e))
-    (pin "4" (uuid f32de466-8cd2-4681-a3d7-37d719d90d6c))
     (instances
       (project "GalaxyModPCB"
         (path "/74bbbacb-c982-4615-b32e-142a16798fae"
@@ -2431,7 +2423,7 @@
     )
   )
 
-  (symbol (lib_id "Transistor_BJT:BCP56") (at 99.06 187.96 90) (mirror x) (unit 1)
+  (symbol (lib_id "Transistor_BJT:BC817") (at 99.06 187.96 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 4ed361fe-72fd-4ec5-a53d-925f42f44c7f)
     (property "Reference" "Q6" (at 99.06 194.31 90)
@@ -2449,7 +2441,6 @@
     (pin "1" (uuid 3cc76d24-f42e-444c-8647-7da28b15c796))
     (pin "2" (uuid 404d46d3-1cbe-4dbe-9a4f-bec173ea8264))
     (pin "3" (uuid 47477fa7-f878-48d5-a724-55b35c52b308))
-    (pin "4" (uuid 2019444e-406b-4c63-a743-a2fe74b202b5))
     (instances
       (project "GalaxyModPCB"
         (path "/74bbbacb-c982-4615-b32e-142a16798fae"
@@ -3428,7 +3419,7 @@
     )
   )
 
-  (symbol (lib_id "Transistor_BJT:BCP56") (at 228.6 137.16 0) (unit 1)
+  (symbol (lib_id "Transistor_BJT:BC817") (at 228.6 137.16 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid aeef4a9a-29f5-42ec-84c8-a1cd2e9f35bf)
     (property "Reference" "Q3" (at 233.68 135.8899 0)
@@ -3446,7 +3437,6 @@
     (pin "1" (uuid d917e942-f400-4421-84e9-ef34c9b063f9))
     (pin "2" (uuid 98f85a11-fe69-4cc9-88d1-99f219bf283c))
     (pin "3" (uuid ee8886d2-a6f1-431b-bb66-cfb59a65047e))
-    (pin "4" (uuid 9603b708-ea82-4c98-9840-6ed8f3bdfa12))
     (instances
       (project "GalaxyModPCB"
         (path "/74bbbacb-c982-4615-b32e-142a16798fae"
