@@ -2562,7 +2562,7 @@
     (property "Value" "Boot mode" (at 154.94 53.34 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" (at 156.21 55.88 0)
+    (property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_TrianglePad1.0x1.5mm" (at 156.21 55.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "https://www.digikey.co.uk/en/products/detail/stackpole-electronics-inc/RMCF0805ZT0R00/1756901" (at 156.21 55.88 0)
