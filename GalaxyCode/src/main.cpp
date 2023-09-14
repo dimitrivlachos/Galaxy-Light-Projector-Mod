@@ -868,3 +868,72 @@ void updateClients() {
   ws.textAll(json);
 }
 #pragma endregion
+
+#pragma region Objects
+/*
+  * A class representing a switch and its functionality.
+  * This class is used to handle switch debouncing and state changes.
+*/
+class Switch {
+  public:
+    Switch(int pin, const char *name, void (*callback)()) {
+      this->pin = pin;
+      this->name = name;
+      this->callback = callback;
+      pinMode(pin, INPUT_PULLUP);
+    }
+
+    void check() {
+      static unsigned long lastDebounceTime = 0;
+      static unsigned long timeReleased = 0;    // Using static variables to preserve state between function calls
+      const unsigned long debounceDelay = 100;   // Debounce delay in milliseconds
+      unsigned long currentMillis = millis();
+
+      int switchReading = digitalRead(pin);
+
+      if (switchReading == LOW) { // If the switch is pressed
+        if (!switchState) {
+          switchState = true;
+          callback(); // Call the callback function
+        }
+      } // No time debounce is required for the switch being pressed as the change in state provides this functionality
+      
+      else { // If the switch is released
+        // Calculate the time since the switch was released
+        unsigned long timeSinceRelease = currentMillis - timeReleased;
+        if(switchState && timeSinceRelease > debounceDelay) {
+          switchState = false;
+          timeReleased = currentMillis;
+        }
+      } // A debounce delay is required for the switch being released as the change in state does not prevent the switch from activating immediately after being released
+    }
+
+  private:
+    int pin;
+    const char *name;
+    void (*callback)();
+    bool switchState = false;
+};
+
+/*
+  * A class representing an LED and its operations.
+*/
+class LED {
+  public:
+    LED(int pin) {
+      this->pin = pin;
+      pinMode(pin, OUTPUT);
+    }
+
+    void set(int value) {
+      if (value == brightness) return; // If the brightness is unchanged, skip the operation
+      if (value < 0 || value > 255) throw "Invalid LED value - must be between 0 and 255"; // If the brightness is out of range, throw an error
+      
+      brightness = value; // Update the brightness
+      analogWrite(pin, brightness); // Set the brightness
+    }
+
+  private:
+    int pin;
+    int brightness = 0;
+};
