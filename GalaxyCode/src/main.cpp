@@ -49,19 +49,8 @@ void handleMotorState();
 void handleBrightnessState();
 
 // Switch handling function declarations
-void checkSwitch(int switchPin, bool &switchState, void (*callback)());
-void handleStateSwitch();
-void handleMotorSwitch();
-void handleBrightnessSwitch();
-void handleColourSwitch();
+void onStateChange();
 
-// Template function for incrementing enums
-template <typename T>
-T incrementEnum(T &enumValue, T lastEnumValue);
-
-// Template function for handling switch state changes
-template <typename EnumType>
-void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switchName);
 
 // WebSocket handling function declarations
 void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
@@ -105,7 +94,7 @@ enum PowerStates {
   Count,
   InitialState = PowerOff
 };
-GenericFSM<PowerStates> PowerFSM(PowerStates::InitialState);
+GenericFSM<PowerStates> PowerFSM(PowerStates::InitialState, onStateChange);
 
 enum RGBWLedStates {
   Blue,
@@ -124,7 +113,7 @@ enum RGBWLedStates {
   Count,
   InitialState = Blue
 };
-GenericFSM<RGBWLedStates> RGBWLedFSM(RGBWLedStates::InitialState);
+GenericFSM<RGBWLedStates> RGBWLedFSM(RGBWLedStates::InitialState, onStateChange);
 
 enum MotorStates {
   MotorOff,
@@ -133,7 +122,7 @@ enum MotorStates {
   Count,
   InitialState = MotorOff
 };
-GenericFSM<MotorStates> MotorFSM(MotorStates::InitialState);
+GenericFSM<MotorStates> MotorFSM(MotorStates::InitialState, onStateChange);
 
 enum BrightnessStates {
   ExtraLow,
@@ -143,7 +132,7 @@ enum BrightnessStates {
   Count,
   InitialState = ExtraLow
 };
-GenericFSM<BrightnessStates> BrightnessFSM(BrightnessStates::InitialState);
+GenericFSM<BrightnessStates> BrightnessFSM(BrightnessStates::InitialState, onStateChange);
 
 //Switch objects
 Switch<PowerStates> stateSwitch(POWER_SWITCH, INPUT_PULLUP, PowerFSM);
@@ -700,28 +689,11 @@ void ButtonLoop( void * pvParameters ){
   vTaskDelay(10 / portTICK_PERIOD_MS);
 }
 
-/**
- * Handle switch state change for an enumerated state.
- *
- * This function is used to handle the change of an enumerated state associated with a switch press.
- * It increments the current state within the provided enumeration range and outputs information
- * about the switch press to the serial monitor.
- *
- * @param enumState A reference to the enumerated state variable to be modified.
- * @param lastEnumValue The last value in the enumeration range, used for wrapping.
- * @param switchName The name of the switch associated with this handler.
- */
-template <typename EnumType>
-void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switchName) {
-  Serial.print(switchName);
-  Serial.print(" Switch Pressed - ");
-  incrementEnum(enumState, lastEnumValue);
-  Serial.println(static_cast<int>(enumState));
-
+void onStateChange() {
   // Guard against sending WebSocket messages before the connection is established
   if(!wifiConnected) return; // If WiFi is not connected, WebSocket is not initialised
   if(!ws.count()) return; // If there are no connected clients, update is not required
-    updateClients();
+  updateClients(); // Update the connected clients
 }
 #pragma endregion
 
@@ -884,13 +856,16 @@ template<typename StateType>
 class GenericFSM {
 public:
     using TransitionFunction = std::function<void()>;
+    using StateChangeCallback = std::function<void(StateType)>;
 
     /**
      * @brief Initializes the FSM with an enum of states.
      *
      * @param initialState The initial state of the FSM.
+     * @param onStateChangeCallback A callback function to be invoked when the state changes.
      */
-    explicit GenericFSM(StateType initialState) : currentState(initialState) {} // Explicit means that the constructor cannot be used for implicit conversions and copy-initialization
+    explicit GenericFSM(StateType initialState, std::function<void()> onStateChangeCallback = nullptr) 
+      : currentState(initialState), onStateChangeCallback(onStateChangeCallback) {} // Explicit means that the constructor cannot be used for implicit conversions and copy-initialization
 
     /**
      * @brief Advances to the next state in the enum.
@@ -898,6 +873,7 @@ public:
     void nextState() {
         // Calculate the next state based on the current state
         currentState = static_cast<StateType>((static_cast<int>(currentState) + 1) % static_cast<int>(StateType::Count));
+        this->onStateChange(); // Invoke the callback function
     }
 
     /**
@@ -907,6 +883,7 @@ public:
      */
     void setState(StateType newState) {
         currentState = newState;
+        this->onStateChange(); // Invoke the callback function
     }
 
     /**
@@ -920,5 +897,13 @@ public:
 
 private:
     StateType currentState;
+    StateChangeCallback onStateChangeCallback; // A callback function to be invoked when the state changes
+
+    void onStateChange() {
+        // Invoke the callback function if it is not null
+        if (onStateChangeCallback != nullptr) {
+            onStateChangeCallback();
+        }
+    }
 };
 #pragma endregion
