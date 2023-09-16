@@ -4,6 +4,9 @@
 #include <ESPAsyncWebServer.h>
 #include <AsyncElegantOTA.h>
 #include <Arduino_Json.h>
+#include <iostream>
+#include <map>
+#include <functional>
 
 // Define and initialize the AsyncWebServer instance
 AsyncWebServer server(80);
@@ -92,6 +95,9 @@ const IPAddress SUBNET(255, 255, 255, 0);
 #define COLOUR_SWITCH 25      // Colour switch
 #define STATE_SWITCH 26       // State switch
 #pragma endregion
+
+//Switch objects
+Switch motorSwitch, brightnessSwitch, colourSwitch, stateSwitch;
 
 #pragma region State Definitions
 // Enumerations for various states
@@ -332,10 +338,10 @@ void setup() {
   pinMode(MOTOR_BJT, OUTPUT);
   
   // Switches are active low so use INPUT_PULLUP
-  pinMode(MOTOR_SWITCH, INPUT_PULLUP);
-  pinMode(BRIGHTNESS_SWITCH, INPUT_PULLUP);
-  pinMode(COLOUR_SWITCH, INPUT_PULLUP);
-  pinMode(STATE_SWITCH, INPUT_PULLUP);
+  motorSwitch.init(MOTOR_SWITCH, INPUT_PULLUP);
+  brightnessSwitch.init(BRIGHTNESS_SWITCH, INPUT_PULLUP);
+  colourSwitch.init(COLOUR_SWITCH, INPUT_PULLUP);
+  stateSwitch.init(STATE_SWITCH, INPUT_PULLUP);
   #pragma endregion
 
   connectToWiFi();
@@ -667,6 +673,7 @@ void setRGBWLed(int red, int green, int blue, int white) {
 #pragma endregion
 
 #pragma region State Handlers
+bool initButton = false;
 /**
  * Task function for monitoring and handling switch states.
  *
@@ -677,19 +684,19 @@ void setRGBWLed(int red, int green, int blue, int white) {
  * @param pvParameters Pointer to task parameters (not used in this case).
  */
 void ButtonLoop( void * pvParameters ){
-  Serial.print("TaskLoopCore1 running on core ");
-  Serial.println(xPortGetCoreID());
-
-  for(;;){
-    // Check the states of various switches and invoke their handlers
-    checkSwitch(MOTOR_SWITCH, motorSwitchState, handleMotorSwitch);
-    checkSwitch(BRIGHTNESS_SWITCH, brightnessSwitchState, handleBrightnessSwitch);
-    checkSwitch(COLOUR_SWITCH, colourSwitchState, handleColourSwitch);
-    checkSwitch(STATE_SWITCH, stateSwitchState, handleStateSwitch);
-    
-    // Delay for 10ms to prevent the task from hogging the CPU
-    vTaskDelay(10 / portTICK_PERIOD_MS);
+  if (!initButton) {
+    Serial.print("TaskLoopCore1 running on core ");
+    Serial.println(xPortGetCoreID());
+    initButton = true;
   }
+  
+  motorSwitch.update();
+  brightnessSwitch.update();
+  colourSwitch.update();
+  stateSwitch.update();
+  
+  // Delay for 10ms to prevent the task from hogging the CPU
+  vTaskDelay(10 / portTICK_PERIOD_MS);
 }
 
 
@@ -878,16 +885,16 @@ class Switch {
   public:
     bool triggered = false; // A flag to indicate if the switch has been triggered
 
-    Switch(int pin) {
+    Switch(uint8_t pin, uint8_t mode) {
       this->pin = pin;
-      pinMode(pin, INPUT_PULLUP);
+      pinMode(pin, mode);
     }
 
     /*
       * Checks the state of the switch and updates the switch state accordingly.
       * Must be called in the main loop.
     */
-    void check() {
+    void update() {
       unsigned long lastDebounceTime = 0;
       unsigned long timeReleased = 0;
       const unsigned long debounceDelay = 100;   // Debounce delay in milliseconds
@@ -920,7 +927,7 @@ class Switch {
     }
 
   private:
-    int pin;
+    uint8_t pin;
     bool switchState = false;
 };
 
@@ -946,3 +953,51 @@ class LED {
     int pin;
     int brightness = 0;
 };
+
+/**
+ * @brief A generic Finite State Machine (FSM) template.
+ *
+ * @tparam StateType The type representing states (an enum).
+ */
+template<typename StateType>
+class GenericFSM {
+public:
+    using TransitionFunction = std::function<void()>;
+
+    /**
+     * @brief Initializes the FSM with an enum of states.
+     *
+     * @param initialState The initial state of the FSM.
+     */
+    explicit GenericFSM(StateType initialState) : currentState(initialState) {}
+
+    /**
+     * @brief Advances to the next state in the enum.
+     */
+    void nextState() {
+        // Calculate the next state based on the current state
+        currentState = static_cast<StateType>((static_cast<int>(currentState) + 1) % static_cast<int>(StateType::Count));
+    }
+
+    /**
+     * @brief Sets the state to a specified state.
+     *
+     * @param newState The state to set.
+     */
+    void setState(StateType newState) {
+        currentState = newState;
+    }
+
+    /**
+     * @brief Retrieves the current state of the FSM.
+     *
+     * @return The current state.
+     */
+    StateType getCurrentState() const {
+        return currentState;
+    }
+
+private:
+    StateType currentState;
+};
+#pragma endregion
