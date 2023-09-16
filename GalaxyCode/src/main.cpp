@@ -90,10 +90,10 @@ const IPAddress SUBNET(255, 255, 255, 0);
 #define BLUE_LED 21           // Red wire
 #define PROJECTOR_LED 27      // Moon projector
 #define MOTOR_BJT 4           // Motor control
-#define MOTOR_SWITCH 32       // Motor switch
-#define BRIGHTNESS_SWITCH 33  // Brightness switch
-#define COLOUR_SWITCH 25      // Colour switch
-#define STATE_SWITCH 26       // State switch
+#define MOTOR_SWITCH 26       // Motor switch
+#define BRIGHTNESS_SWITCH 25  // Brightness switch
+#define COLOUR_SWITCH 33      // Colour switch
+#define STATE_SWITCH 32       // State switch
 #pragma endregion
 
 #pragma region State Definitions
@@ -146,7 +146,7 @@ enum BrightnessStates {
 GenericFSM<BrightnessStates> BrightnessFSM(BrightnessStates::InitialState);
 
 //Switch objects
-Switch<PowerStates> stateSwitch(STATE_SWITCH, INPUT_PULLUP, PowerFSM);
+Switch<PowerStates> stateSwitch(POWER_SWITCH, INPUT_PULLUP, PowerFSM);
 Switch<MotorStates> motorSwitch(MOTOR_SWITCH, INPUT_PULLUP, MotorFSM);
 Switch<BrightnessStates> brightnessSwitch(BRIGHTNESS_SWITCH, INPUT_PULLUP, BrightnessFSM);
 Switch<RGBWLedStates> colourSwitch(COLOUR_SWITCH, INPUT_PULLUP, RGBWLedFSM);
