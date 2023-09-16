@@ -32,8 +32,8 @@ bool wifiConnected = false;
 
 #pragma region Function Declarations
 // Core task function declarations
-void LoopOutputHandle(void *pvParameters);
-void LoopStateHandle(void *pvParameters);
+void OutputLoop(void *pvParameters);
+void ButtonLoop(void *pvParameters);
 
 // Function to connect to WiFi
 void connectToWiFi();
@@ -364,7 +364,7 @@ void setup() {
   
   Serial.print("Initialising TaskLoopCore1... ");
   xTaskCreatePinnedToCore(
-    LoopOutputHandle,     /* Task function. */
+    OutputLoop,     /* Task function. */
     "TaskLoopCore1",      /* name of task. */
     10000,                /* Stack size of task */
     NULL,                 /* parameter of the task */
@@ -375,7 +375,7 @@ void setup() {
 
   Serial.print("Initialising TaskLoopCore0... ");
   xTaskCreatePinnedToCore(
-    LoopStateHandle,      /* Task function. */
+    ButtonLoop,      /* Task function. */
     "TaskLoopCore0",      /* name of task. */
     10000,                /* Stack size of task */
     NULL,                 /* parameter of the task */
@@ -443,7 +443,7 @@ void loop() {
  *
  * @param pvParameters A pointer to the parameters passed to the task (not used in this case).
  */
-void LoopOutputHandle(void *pvParameters) {
+void OutputLoop(void *pvParameters) {
   // Print the core ID for debugging purposes
   Serial.print("TaskLoopCore1 running on core ");
   Serial.println(xPortGetCoreID());
@@ -676,7 +676,7 @@ void setRGBWLed(int red, int green, int blue, int white) {
  *
  * @param pvParameters Pointer to task parameters (not used in this case).
  */
-void LoopStateHandle( void * pvParameters ){
+void ButtonLoop( void * pvParameters ){
   Serial.print("TaskLoopCore1 running on core ");
   Serial.println(xPortGetCoreID());
 
