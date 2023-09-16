@@ -878,9 +878,8 @@ class Switch {
   public:
     bool triggered = false; // A flag to indicate if the switch has been triggered
 
-    Switch(int pin, const char *name) {
+    Switch(int pin) {
       this->pin = pin;
-      this->name = name;
       pinMode(pin, INPUT_PULLUP);
     }
 
@@ -922,7 +921,6 @@ class Switch {
 
   private:
     int pin;
-    const char *name;
     bool switchState = false;
 };
 
