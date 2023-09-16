@@ -96,17 +96,16 @@ const IPAddress SUBNET(255, 255, 255, 0);
 #define STATE_SWITCH 26       // State switch
 #pragma endregion
 
-//Switch objects
-Switch motorSwitch, brightnessSwitch, colourSwitch, stateSwitch;
-
 #pragma region State Definitions
 // Enumerations for various states
 enum PowerStates {
   PowerOff,
   On,
   Project,
-  PowerLast
+  Count,
+  InitialState = PowerOff
 };
+GenericFSM<PowerStates> PowerFSM(PowerStates::InitialState);
 
 enum RGBWLedStates {
   Blue,
@@ -125,6 +124,7 @@ enum RGBWLedStates {
   Count,
   InitialState = Blue
 };
+GenericFSM<RGBWLedStates> RGBWLedFSM(RGBWLedStates::InitialState);
 
 enum MotorStates {
   MotorOff,
@@ -133,6 +133,7 @@ enum MotorStates {
   Count,
   InitialState = MotorOff
 };
+GenericFSM<MotorStates> MotorFSM(MotorStates::InitialState);
 
 enum BrightnessStates {
   ExtraLow,
@@ -142,6 +143,13 @@ enum BrightnessStates {
   Count,
   InitialState = ExtraLow
 };
+GenericFSM<BrightnessStates> BrightnessFSM(BrightnessStates::InitialState);
+
+//Switch objects
+Switch<PowerStates> stateSwitch(STATE_SWITCH, INPUT_PULLUP, PowerFSM);
+Switch<MotorStates> motorSwitch(MOTOR_SWITCH, INPUT_PULLUP, MotorFSM);
+Switch<BrightnessStates> brightnessSwitch(BRIGHTNESS_SWITCH, INPUT_PULLUP, BrightnessFSM);
+Switch<RGBWLedStates> colourSwitch(COLOUR_SWITCH, INPUT_PULLUP, RGBWLedFSM);
 #pragma endregion
 
 #pragma region HTML
@@ -335,12 +343,6 @@ void setup() {
   pinMode(BLUE_LED, OUTPUT);
   pinMode(PROJECTOR_LED, OUTPUT);
   pinMode(MOTOR_BJT, OUTPUT);
-  
-  // Switches are active low so use INPUT_PULLUP
-  motorSwitch.init(MOTOR_SWITCH, INPUT_PULLUP);
-  brightnessSwitch.init(BRIGHTNESS_SWITCH, INPUT_PULLUP);
-  colourSwitch.init(COLOUR_SWITCH, INPUT_PULLUP);
-  stateSwitch.init(STATE_SWITCH, INPUT_PULLUP);
   #pragma endregion
 
   connectToWiFi();
@@ -854,10 +856,10 @@ String generateJsonForStates() {
   JSONVar states;
 
   // Add the states to the JSON object
-  states["Power"] = static_cast<int>(pStates);
-  states["Brightness"] = static_cast<int>(bStates);
-  states["Colour"] = static_cast<int>(rgbwStates);
-  states["Motor"] = static_cast<int>(mStates);
+  states["Power"] = static_cast<int>(PowerFSM.getCurrentState());
+  states["Brightness"] = static_cast<int>(BrightnessFSM.getCurrentState());
+  states["Colour"] = static_cast<int>(RGBWLedFSM.getCurrentState());
+  states["Motor"] = static_cast<int>(MotorFSM.getCurrentState());
 
   // Convert the JSON object to a string
   String json = JSON.stringify(states);
@@ -880,12 +882,14 @@ void updateClients() {
   * A class representing a switch and its functionality.
   * This class is used to handle switch debouncing and state changes.
 */
+template <typename EnumType>
 class Switch {
   public:
     bool triggered = false; // A flag to indicate if the switch has been triggered
 
-    Switch(uint8_t pin, uint8_t mode) {
+    Switch(uint8_t pin, uint8_t mode, GenericFSM<EnumType>& fsm) {
       this->pin = pin;
+      this->fsm = fsm;
       pinMode(pin, mode);
     }
 
@@ -903,8 +907,9 @@ class Switch {
 
       if (switchReading == LOW) { // If the switch is pressed
         if (!switchState) {
-          switchState = true;
-          triggered = true;
+          switchState = true; // Update the switch state
+          triggered = true; // Update the triggered flag
+          fsm.nextState(); // Advance to the next state in the FSM
         }
       } // No time debounce is required for the switch being pressed as the change in state provides this functionality
       
@@ -928,6 +933,7 @@ class Switch {
   private:
     uint8_t pin;
     bool switchState = false;
+    GenericFSM<EnumType>& fsm;
 };
 
 /*
