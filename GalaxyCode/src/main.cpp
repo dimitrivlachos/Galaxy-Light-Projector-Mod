@@ -101,15 +101,14 @@ Switch motorSwitch, brightnessSwitch, colourSwitch, stateSwitch;
 
 #pragma region State Definitions
 // Enumerations for various states
-enum PowerStateEnum {
+enum PowerStates {
   PowerOff,
   On,
   Project,
   PowerLast
 };
-PowerStateEnum pStates = PowerOff;
 
-enum RGBWStateEnum {
+enum RGBWLedStates {
   Blue,
   Red,
   Green,
@@ -123,26 +122,26 @@ enum RGBWStateEnum {
   BlueGreenWhite,
   BlueRedGreenWhite,
   Cycle,
-  LedLast
+  Count,
+  InitialState = Blue
 };
-RGBWStateEnum rgbwStates = Blue;
 
-enum MotorStateEnum {
+enum MotorStates {
   MotorOff,
   Fast,
   Slow,
-  MotorLast
+  Count,
+  InitialState = MotorOff
 };
-MotorStateEnum mStates = MotorOff;
 
-enum BrightnessStateEnum {
+enum BrightnessStates {
   ExtraLow,
   Low,
   Medium,
   High,
-  BrightnessLast
+  Count,
+  InitialState = ExtraLow
 };
-BrightnessStateEnum bStates = ExtraLow;
 #pragma endregion
 
 #pragma region HTML
@@ -460,7 +459,7 @@ void OutputLoop(void *pvParameters) {
     handlePowerState();
 
     // Skip handling other states if the device is powered off
-    if (pStates == PowerStateEnum::PowerOff) {
+    if (pStates == PowerStates::PowerOff) {
       continue;
     }
 
@@ -491,7 +490,7 @@ void OutputLoop(void *pvParameters) {
  */
 void handlePowerState() {
   switch (pStates) {
-    case PowerStateEnum::PowerOff:
+    case PowerStates::PowerOff:
       // Turn off all LEDs and deactivate the projector and motor
       analogWrite(RED_LED, 0);
       analogWrite(GREEN_LED, 0);
@@ -500,11 +499,11 @@ void handlePowerState() {
       digitalWrite(PROJECTOR_LED, LOW);
       analogWrite(MOTOR_BJT, 0);
       break;
-    case PowerStateEnum::On:
+    case PowerStates::On:
       // Being in this state allows the other states to be handled
       // Otherwise, the other state handlers will be skipped
       break;
-    case PowerStateEnum::Project:
+    case PowerStates::Project:
       // Activate the projector
       digitalWrite(PROJECTOR_LED, HIGH);
       // Being in this state allows the other states to be handled
@@ -534,19 +533,19 @@ void handlePowerState() {
  */
 void handleBrightnessState() {
   switch (bStates) {
-    case BrightnessStateEnum::ExtraLow:
+    case BrightnessStates::ExtraLow:
       // Set the brightness to 25% of the maximum level
       brightness = 0.25;
       break;
-    case BrightnessStateEnum::Low:
+    case BrightnessStates::Low:
       // Set the brightness to 50% of the maximum level
       brightness = 0.5;
       break;
-    case BrightnessStateEnum::Medium:
+    case BrightnessStates::Medium:
       // Set the brightness to 75% of the maximum level
       brightness = 0.75;
       break;
-    case BrightnessStateEnum::High:
+    case BrightnessStates::High:
       // Set the brightness to the maximum level (100%)
       brightness = 1;
       break;
@@ -566,43 +565,43 @@ void handleBrightnessState() {
  */
 void handleRGBWState() {
   switch(rgbwStates) {
-    case RGBWStateEnum::Blue:
+    case RGBWLedStates::Blue:
       setRGBWLed(0, 0, 255, 0);
       break;
-    case RGBWStateEnum::Red:
+    case RGBWLedStates::Red:
       setRGBWLed(255, 0, 0, 0);
       break;
-    case RGBWStateEnum::Green:
+    case RGBWLedStates::Green:
       setRGBWLed(0, 255, 0, 0);
       break;
-    case RGBWStateEnum::White:
+    case RGBWLedStates::White:
       setRGBWLed(0, 0, 0, 255);
       break;
-    case RGBWStateEnum::BlueRed:
+    case RGBWLedStates::BlueRed:
       setRGBWLed(255, 0, 255, 0);
       break;
-    case RGBWStateEnum::BlueGreen:
+    case RGBWLedStates::BlueGreen:
       setRGBWLed(0, 255, 255, 0);
       break;
-    case RGBWStateEnum::RedGreen:
+    case RGBWLedStates::RedGreen:
       setRGBWLed(255, 255, 0, 0);
       break;
-    case RGBWStateEnum::RedWhite:
+    case RGBWLedStates::RedWhite:
       setRGBWLed(255, 0, 0, 255);
       break;
-    case RGBWStateEnum::GreenWhite:
+    case RGBWLedStates::GreenWhite:
       setRGBWLed(0, 255, 0, 255);
       break;
-    case RGBWStateEnum::RedGreenBlue:
+    case RGBWLedStates::RedGreenBlue:
       setRGBWLed(255, 255, 255, 0);
       break;
-    case RGBWStateEnum::BlueGreenWhite:
+    case RGBWLedStates::BlueGreenWhite:
       setRGBWLed(0, 255, 255, 255);
       break;
-    case RGBWStateEnum::BlueRedGreenWhite:
+    case RGBWLedStates::BlueRedGreenWhite:
       setRGBWLed(255, 255, 255, 255);
       break;
-    case RGBWStateEnum::Cycle:
+    case RGBWLedStates::Cycle:
       // Cycle through the colours using a sine wave on millis()
       setRGBWLed(
         127.5 * (1 + sin(millis() / 1000.0)),               // Red
@@ -631,15 +630,15 @@ void handleRGBWState() {
  */
 void handleMotorState() {
   switch (mStates) {
-    case MotorStateEnum::MotorOff:
+    case MotorStates::MotorOff:
       // Turn off the motor by setting analog output to 0
       analogWrite(MOTOR_BJT, 0);
       break;
-    case MotorStateEnum::Fast:
+    case MotorStates::Fast:
       // Set the motor speed to maximum (255) using analog output
       analogWrite(MOTOR_BJT, 255);
       break;
-    case MotorStateEnum::Slow:
+    case MotorStates::Slow:
       // Set the motor speed to a moderate value (200) using analog output
       analogWrite(MOTOR_BJT, 200);
       break;
@@ -735,28 +734,28 @@ void checkSwitch(int switchPin, bool &switchState, void (*callback)()) {
 }
 
 void handleStateSwitch() {
-  handleSwitch(pStates, PowerStateEnum::PowerLast, "Power");
+  handleSwitch(pStates, PowerStates::PowerLast, "Power");
 }
 
 void handleMotorSwitch() {
   // Skip handling the motor switch if the device is powered off
-  //if (pStates == PowerStateEnum::PowerOff) return;
+  //if (pStates == PowerStates::PowerOff) return;
 
-  handleSwitch(mStates, MotorStateEnum::MotorLast, "Motor");
+  handleSwitch(mStates, MotorStates::MotorLast, "Motor");
 }
 
 void handleBrightnessSwitch() {
   // Skip handling the motor switch if the device is powered off
-  //if (pStates == PowerStateEnum::PowerOff) return;
+  //if (pStates == PowerStates::PowerOff) return;
 
-  handleSwitch(bStates, BrightnessStateEnum::BrightnessLast, "Brightness");
+  handleSwitch(bStates, BrightnessStates::BrightnessLast, "Brightness");
 }
 
 void handleColourSwitch() {
   // Skip handling the motor switch if the device is powered off
-  //if (pStates == PowerStateEnum::PowerOff) return;
+  //if (pStates == PowerStates::PowerOff) return;
 
-  handleSwitch(rgbwStates, RGBWStateEnum::LedLast, "Colour");
+  handleSwitch(rgbwStates, RGBWLedStates::LedLast, "Colour");
 }
 
 /**
@@ -969,7 +968,7 @@ public:
      *
      * @param initialState The initial state of the FSM.
      */
-    explicit GenericFSM(StateType initialState) : currentState(initialState) {}
+    explicit GenericFSM(StateType initialState) : currentState(initialState) {} // Explicit means that the constructor cannot be used for implicit conversions and copy-initialization
 
     /**
      * @brief Advances to the next state in the enum.
