@@ -876,16 +876,21 @@ void updateClients() {
 */
 class Switch {
   public:
-    Switch(int pin, const char *name, void (*callback)()) {
+    bool triggered = false; // A flag to indicate if the switch has been triggered
+
+    Switch(int pin, const char *name) {
       this->pin = pin;
       this->name = name;
-      this->callback = callback;
       pinMode(pin, INPUT_PULLUP);
     }
 
+    /*
+      * Checks the state of the switch and updates the switch state accordingly.
+      * Must be called in the main loop.
+    */
     void check() {
-      static unsigned long lastDebounceTime = 0;
-      static unsigned long timeReleased = 0;    // Using static variables to preserve state between function calls
+      unsigned long lastDebounceTime = 0;
+      unsigned long timeReleased = 0;
       const unsigned long debounceDelay = 100;   // Debounce delay in milliseconds
       unsigned long currentMillis = millis();
 
@@ -894,7 +899,7 @@ class Switch {
       if (switchReading == LOW) { // If the switch is pressed
         if (!switchState) {
           switchState = true;
-          callback(); // Call the callback function
+          triggered = true;
         }
       } // No time debounce is required for the switch being pressed as the change in state provides this functionality
       
@@ -908,10 +913,16 @@ class Switch {
       } // A debounce delay is required for the switch being released as the change in state does not prevent the switch from activating immediately after being released
     }
 
+    /*
+      * Resets the switch state.
+    */
+    void reset() {
+      triggered = false;
+    }
+
   private:
     int pin;
     const char *name;
-    void (*callback)();
     bool switchState = false;
 };
 
