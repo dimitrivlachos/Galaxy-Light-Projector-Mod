@@ -700,66 +700,6 @@ void ButtonLoop( void * pvParameters ){
   vTaskDelay(10 / portTICK_PERIOD_MS);
 }
 
-
-/**
- * Checks the state of a switch connected to the specified pin and updates the switch state accordingly.
- * 
- * @param switchPin The digital pin to which the switch is connected.
- * @param switchState A reference to a boolean variable representing the current state of the switch.
- *                    This variable will be updated based on the switch's state.
- * @param callback A callback function that will be called when the switch is pressed.
- *                 The callback function should have the signature: void functionName()
- */
-void checkSwitch(int switchPin, bool &switchState, void (*callback)()) {
-  static unsigned long lastDebounceTime = 0;
-  static unsigned long timeReleased = 0;    // Using static variables to preserve state between function calls
-  const unsigned long debounceDelay = 100;   // Debounce delay in milliseconds
-  unsigned long currentMillis = millis();
-
-  int switchReading = digitalRead(switchPin);
-
-  if (switchReading == LOW) { // If the switch is pressed
-    if (!switchState) {
-      switchState = true;
-      callback(); // Call the callback function
-    }
-  } // No time debounce is required for the switch being pressed as the change in state provides this functionality
-  
-  else { // If the switch is released
-    // Calculate the time since the switch was released
-    unsigned long timeSinceRelease = currentMillis - timeReleased;
-    if(switchState && timeSinceRelease > debounceDelay) {
-      switchState = false;
-      timeReleased = currentMillis;
-    }
-  } // A debounce delay is required for the switch being released as the change in state does not prevent the switch from activating immediately after being released
-}
-
-void handleStateSwitch() {
-  handleSwitch(pStates, PowerStates::PowerLast, "Power");
-}
-
-void handleMotorSwitch() {
-  // Skip handling the motor switch if the device is powered off
-  //if (pStates == PowerStates::PowerOff) return;
-
-  handleSwitch(mStates, MotorStates::MotorLast, "Motor");
-}
-
-void handleBrightnessSwitch() {
-  // Skip handling the motor switch if the device is powered off
-  //if (pStates == PowerStates::PowerOff) return;
-
-  handleSwitch(bStates, BrightnessStates::BrightnessLast, "Brightness");
-}
-
-void handleColourSwitch() {
-  // Skip handling the motor switch if the device is powered off
-  //if (pStates == PowerStates::PowerOff) return;
-
-  handleSwitch(rgbwStates, RGBWLedStates::LedLast, "Colour");
-}
-
 /**
  * Handle switch state change for an enumerated state.
  *
@@ -782,24 +722,6 @@ void handleSwitch(EnumType &enumState, EnumType lastEnumValue, const char *switc
   if(!wifiConnected) return; // If WiFi is not connected, WebSocket is not initialised
   if(!ws.count()) return; // If there are no connected clients, update is not required
     updateClients();
-}
-
-
-/**
- * Increments an enumeration value and wraps it around based on the provided range.
- *
- * This function increments the given enumeration value and ensures it wraps around
- * within the range defined by the last enumeration value. The incrementing and wrapping
- * behavior is calculated as (enumValue + 1) % lastEnumValue.
- *
- * @param enumValue A reference to the enumeration value to be incremented.
- * @param lastEnumValue The last enumeration value in the range, defining the wrapping point.
- * @return The incremented enumeration value after wrapping.
- */
-template <typename T>
-T incrementEnum(T &enumValue, T lastEnumValue) {
-  enumValue = static_cast<T>((enumValue + 1) % lastEnumValue);
-  return enumValue;
 }
 #pragma endregion
 
@@ -885,8 +807,6 @@ void updateClients() {
 template <typename EnumType>
 class Switch {
   public:
-    bool triggered = false; // A flag to indicate if the switch has been triggered
-
     Switch(uint8_t pin, uint8_t mode, GenericFSM<EnumType>& fsm) {
       this->pin = pin;
       this->fsm = fsm;
@@ -908,8 +828,11 @@ class Switch {
       if (switchReading == LOW) { // If the switch is pressed
         if (!switchState) {
           switchState = true; // Update the switch state
-          triggered = true; // Update the triggered flag
           fsm.nextState(); // Advance to the next state in the FSM
+
+          // Print the current state to the serial monitor
+          Serial.print("Switch Pressed - ");
+          Serial.println(static_cast<int>(fsm.getCurrentState()));
         }
       } // No time debounce is required for the switch being pressed as the change in state provides this functionality
       
@@ -921,13 +844,6 @@ class Switch {
           timeReleased = currentMillis;
         }
       } // A debounce delay is required for the switch being released as the change in state does not prevent the switch from activating immediately after being released
-    }
-
-    /*
-      * Resets the switch state.
-    */
-    void reset() {
-      triggered = false;
     }
 
   private:
