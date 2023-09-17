@@ -66,6 +66,47 @@
       gap: 20px;
       margin-top: 1rem;
     }
+    
+    /* Style for sliders */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 10px;
+      background: #555;
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+    }
+
+    /* Style for sliders when active */
+    input[type="range"]:hover {
+      opacity: 1;
+    }
+
+    /* Style for sliders when dragged */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #00bfff;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: #00bfff;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    /* Add margin between color sliders */
+    .color-slider {
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
@@ -81,17 +122,17 @@
       </div>
       <div class="card">
         <h2>Brightness</h2>
-        <p><button id="Brightness" class="button">☀️</button></p>
+        <input type="range" id="BrightnessSlider" min="0" max="255" value="0">
         <p class="state" id="BrightnessState">State: </p>
       </div>
       <div class="card">
         <h2>Colour</h2>
-        <p><button id="Colour" class="button">🌈</button></p>
+        <input type="color" id="ColourPicker" value="#000000">
         <p class="state" id="ColourState">State: </p>
       </div>
       <div class="card">
         <h2>Spin</h2>
-        <p><button id="Motor" class="button">💫</button></p>
+        <input type="range" id="MotorSlider" min="0" max="255" value="0">
         <p class="state" id="MotorState">State: </p>
       </div>
       <!-- Add more cards here -->
