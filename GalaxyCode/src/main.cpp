@@ -872,9 +872,32 @@ public:
         return currentState;
     }
 
+    /**
+     * @brief Adds an action to be performed when in a specified state.
+     *
+     * @param state The state to add the action to.
+     * @param action The action to be performed.
+     */
+    void addStateAction(StateType state, TransitionFunction action) {
+        stateActions[state] = action;
+    }
+
+    /**
+     * @brief performs the action associated with the current state.
+     */
+    void performStateAction() {
+        // If the current state does not have an associated action, return
+        if (stateActions.find(currentState) == stateActions.end()) {
+            return;
+        }
+        // Invoke the action associated with the current state
+        stateActions[currentState]();
+    }
+
 private:
     StateType currentState;
     StateChangeCallback onStateChangeCallback; // A callback function to be invoked when the state changes
+    std::map<StateType, TransitionFunction> stateActions; // A map of states and their corresponding actions
 
     void onStateChange() {
         // Invoke the callback function if it is not null
