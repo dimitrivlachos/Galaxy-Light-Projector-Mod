@@ -450,7 +450,7 @@ void OutputLoop(void *pvParameters) {
     handlePowerState();
 
     // Skip handling other states if the device is powered off
-    if (pStates == PowerStates::PowerOff) {
+    if (PowerFSM.getCurrentState() == PowerStates::PowerOff) {
       continue;
     }
 
@@ -480,7 +480,7 @@ void OutputLoop(void *pvParameters) {
  *     The projector LED will be on in this state.
  */
 void handlePowerState() {
-  switch (pStates) {
+  switch (PowerFSM.getCurrentState()) {
     case PowerStates::PowerOff:
       // Turn off all LEDs and deactivate the projector and motor
       analogWrite(RED_LED, 0);
@@ -523,7 +523,7 @@ void handlePowerState() {
  *   - High: Sets the brightness to the maximum level (100%).
  */
 void handleBrightnessState() {
-  switch (bStates) {
+  switch (BrightnessFSM.getCurrentState()) {
     case BrightnessStates::ExtraLow:
       // Set the brightness to 25% of the maximum level
       brightness = 0.25;
@@ -555,7 +555,7 @@ void handleBrightnessState() {
  * If the RGBW state is not recognized, an error message is printed to the serial monitor.
  */
 void handleRGBWState() {
-  switch(rgbwStates) {
+  switch(RGBWLedFSM.getCurrentState()) {
     case RGBWLedStates::Blue:
       setRGBWLed(0, 0, 255, 0);
       break;
@@ -620,7 +620,7 @@ void handleRGBWState() {
  *   - Slow: Sets the motor speed to a moderate value (200) using analog output.
  */
 void handleMotorState() {
-  switch (mStates) {
+  switch (MotorFSM.getCurrentState()) {
     case MotorStates::MotorOff:
       // Turn off the motor by setting analog output to 0
       analogWrite(MOTOR_BJT, 0);
@@ -726,13 +726,13 @@ void handleWebSocketMessage(void *arg, uint8_t *payload, size_t length) {
   Serial.println(message);
 
   if (message == "Power") {
-    handleStateSwitch();
+    PowerFSM.nextState();
   } else if (message == "Brightness") {
-    handleBrightnessSwitch();
+    BrightnessFSM.nextState();
   } else if (message == "Colour") {
-    handleColourSwitch();
+    RGBWLedFSM.nextState();
   } else if (message == "Motor") {
-    handleMotorSwitch();
+    MotorFSM.nextState();
   } else if (message == "getStates") {
     updateClients();
   } else {
@@ -824,29 +824,6 @@ class Switch {
     GenericFSM<EnumType>& fsm;
 };
 
-/*
-  * A class representing an LED and its operations.
-*/
-class LED {
-  public:
-    LED(int pin) {
-      this->pin = pin;
-      pinMode(pin, OUTPUT);
-    }
-
-    void set(int value) {
-      if (value == brightness) return; // If the brightness is unchanged, skip the operation
-      if (value < 0 || value > 255) throw "Invalid LED value - must be between 0 and 255"; // If the brightness is out of range, throw an error
-      
-      brightness = value; // Update the brightness
-      analogWrite(pin, brightness); // Set the brightness
-    }
-
-  private:
-    int pin;
-    int brightness = 0;
-};
-
 /**
  * @brief A generic Finite State Machine (FSM) template.
  *
@@ -873,7 +850,7 @@ public:
     void nextState() {
         // Calculate the next state based on the current state
         currentState = static_cast<StateType>((static_cast<int>(currentState) + 1) % static_cast<int>(StateType::Count));
-        this->onStateChange(); // Invoke the callback function
+        onStateChange(); // Invoke the callback function
     }
 
     /**
@@ -883,7 +860,7 @@ public:
      */
     void setState(StateType newState) {
         currentState = newState;
-        this->onStateChange(); // Invoke the callback function
+        onStateChange(); // Invoke the callback function
     }
 
     /**
@@ -905,5 +882,51 @@ private:
             onStateChangeCallback();
         }
     }
+};
+
+/*
+  * A class representing an LED and its operations.
+*/
+class LED {
+  public:
+    LED(int pin) {
+      this->pin = pin;
+      pinMode(pin, OUTPUT);
+    }
+
+    void set(int value) {
+      if (value == brightness) return; // If the brightness is unchanged, skip the operation
+      if (value < 0 || value > 255) throw "Invalid LED value - must be between 0 and 255"; // If the brightness is out of range, throw an error
+      
+      brightness = value; // Update the brightness
+      analogWrite(pin, brightness); // Set the brightness
+    }
+
+  private:
+    int pin;
+    int brightness = 0;
+};
+
+class RGBWLED {
+  public:
+    RGBWLED(int redPin, int greenPin, int bluePin, int whitePin) {
+      redLED = new LED(redPin);
+      greenLED = new LED(greenPin);
+      blueLED = new LED(bluePin);
+      whiteLED = new LED(whitePin);
+    }
+
+    void set(int red, int green, int blue, int white) {
+      redLED->set(red);
+      greenLED->set(green);
+      blueLED->set(blue);
+      whiteLED->set(white);
+    }
+
+  private:
+    LED* redLED;
+    LED* greenLED;
+    LED* blueLED;
+    LED* whiteLED;
 };
 #pragma endregion
