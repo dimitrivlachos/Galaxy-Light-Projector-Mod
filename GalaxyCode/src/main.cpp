@@ -24,7 +24,8 @@ bool colourSwitchState = false;
 bool stateSwitchState = false;
 
 // Brightness level variable
-float brightness = 0.0;
+float rgbw_brightness = 0.0;
+float moon_brightness = 255;
 
 // Maximum number of WiFi connection attempts
 #define MAX_WIFI_ATTEMPTS 10
@@ -42,6 +43,11 @@ void ButtonLoop(void *pvParameters);
 void connectToWiFi();
 
 // State handling function declarations
+void initPowerFSM_Actions();
+void initRGBWLedFSM_Actions();
+void initMotorFSM_Actions();
+void initBrightnessFSM_Actions();
+
 void setRGBWLed(int red, int green, int blue, int white);
 void handlePowerState();
 void handleRGBWState();
@@ -96,6 +102,13 @@ enum PowerStates {
 };
 GenericFSM<PowerStates> PowerFSM(PowerStates::InitialState, onStateChange);
 
+struct RGBWState {
+  int red;
+  int green;
+  int blue;
+  int white;
+};
+
 enum RGBWLedStates {
   Blue,
   Red,
@@ -140,6 +153,10 @@ Switch<MotorStates> motorSwitch(MOTOR_SWITCH, INPUT_PULLUP, MotorFSM);
 Switch<BrightnessStates> brightnessSwitch(BRIGHTNESS_SWITCH, INPUT_PULLUP, BrightnessFSM);
 Switch<RGBWLedStates> colourSwitch(COLOUR_SWITCH, INPUT_PULLUP, RGBWLedFSM);
 #pragma endregion
+
+RGBWLED rgbwLed;
+PWM_Device moonProjectorLed;
+PWM_Device motor;
 
 #pragma region HTML
 const char index_html[] PROGMEM = R"rawliteral(
@@ -325,17 +342,17 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Booting");
 
-  #pragma region Pin Initialisation
-  pinMode(RED_LED, OUTPUT);
-  pinMode(WHITE_LED, OUTPUT);
-  pinMode(GREEN_LED, OUTPUT);
-  pinMode(BLUE_LED, OUTPUT);
-  pinMode(PROJECTOR_LED, OUTPUT);
-  pinMode(MOTOR_BJT, OUTPUT);
-  #pragma endregion
+  rgbwLed = new RGBWLED(RED_LED, GREEN_LED, BLUE_LED, WHITE_LED);
+  moonProjectorLed = new PWM_Device(PROJECTOR_LED);
+  motor = new PWM_Device(MOTOR_BJT);
+
+  // Initialise the state actions
+  initPowerFSM_Actions();
+  initRGBWLedFSM_Actions();
+  initMotorFSM_Actions();
+  initBrightnessFSM_Actions();
 
   connectToWiFi();
-
   if(wifiConnected) {
     // Initialise WebSocket
     Serial.println("Initialising WebSocket");
@@ -430,6 +447,7 @@ void loop() {
 }
 
 #pragma region Output Handlers
+bool initOutput = false;
 /**
  * Task function to handle the output loop on a specific core.
  *
@@ -440,225 +458,148 @@ void loop() {
  * @param pvParameters A pointer to the parameters passed to the task (not used in this case).
  */
 void OutputLoop(void *pvParameters) {
-  // Print the core ID for debugging purposes
-  Serial.print("TaskLoopCore1 running on core ");
-  Serial.println(xPortGetCoreID());
-
-  // Enter the main loop
-  for (;;) {
-    // Handle power state regardless of other states
-    handlePowerState();
-
-    // Skip handling other states if the device is powered off
-    if (PowerFSM.getCurrentState() == PowerStates::PowerOff) {
-      continue;
-    }
-
-    // Handle brightness state
-    handleBrightnessState();
-
-    // Handle RGBW state
-    handleRGBWState();
-
-    // Handle motor state
-    handleMotorState();
+  if (!initOutput) {
+    // Print the core ID for debugging purposes
+    Serial.print("TaskLoopCore1 running on core ");
+    Serial.println(xPortGetCoreID());
+    initOutput = true;
   }
+  // Handle power state regardless of other states
+  PowerFSM.performStateAction();
+
+  // Skip handling other states if the device is powered off
+  if (PowerFSM.getCurrentState() == PowerStates::PowerOff) {
+    return;
+  }
+
+  // Handle brightness state
+  BrightnessFSM.performStateAction();
+
+  // Handle RGBW state
+  RGBWLedFSM.performStateAction();
+
+  // Handle motor state
+  MotorFSM.performStateAction();
 }
 
-/**
- * Handle power state and associated actions.
- *
- * This function is responsible for handling the power state of the device and
- * performing relevant actions based on the current power state. It controls the
- * LED colors, projector state, and motor state according to the power state.
- * If the power state is not recognized, an error message is printed to the serial monitor.
- *
- * @remarks The function behaviors in different power states:
- *   - PowerOff: Turns off all LEDs, deactivates the projector and motor.
- *   - On: Allows other state handlers to be executed, facilitating state transitions.
- *   - Project: Activates the projector and allows other state handlers to be executed.
- *     The projector LED will be on in this state.
- */
-void handlePowerState() {
-  switch (PowerFSM.getCurrentState()) {
-    case PowerStates::PowerOff:
-      // Turn off all LEDs and deactivate the projector and motor
-      analogWrite(RED_LED, 0);
-      analogWrite(GREEN_LED, 0);
-      analogWrite(BLUE_LED, 0);
-      analogWrite(WHITE_LED, 0);
-      digitalWrite(PROJECTOR_LED, LOW);
-      analogWrite(MOTOR_BJT, 0);
-      break;
-    case PowerStates::On:
-      // Being in this state allows the other states to be handled
-      // Otherwise, the other state handlers will be skipped
-      break;
-    case PowerStates::Project:
-      // Activate the projector
-      digitalWrite(PROJECTOR_LED, HIGH);
-      // Being in this state allows the other states to be handled
-      // Otherwise, the other state handlers will be skipped
-      // In this case, the projector LED will be on as well.
-      break;
-    default:
-      // Print an error message for unrecognized power state
-      Serial.println("Invalid Power State");
-      break;
-  }
+/*
+  * Initialises the actions for the PowerFSM.
+*/
+void initPowerFSM_Actions() {
+  // If the power is off, turn everything off
+  PowerFSM.addStateAction(PowerStates::PowerOff, []() {
+    rgbwLed.setRGBW(0, 0, 0, 0);
+    moonProjectorLed.set(0);
+    motor.set(0);
+  });
+
+  PowerFSM.addStateAction(PowerStates::Project, []() {
+    moonProjectorLed.set(moon_brightness);
+  });
 }
 
-/**
- * Handle brightness state and set the global brightness level modifier.
- *
- * This function is responsible for adjusting the global brightness level modifier of the
- * device's LED colors based on the current brightness state. The brightness level
- * is controlled by modifying the 'brightness' variable. If the brightness state is
- * not recognized, an error message is printed to the serial monitor.
- *
- * @remarks The function behaviors in different brightness states:
- *   - ExtraLow: Sets the brightness to 25% of the maximum level.
- *   - Low: Sets the brightness to 50% of the maximum level.
- *   - Medium: Sets the brightness to 75% of the maximum level.
- *   - High: Sets the brightness to the maximum level (100%).
- */
-void handleBrightnessState() {
-  switch (BrightnessFSM.getCurrentState()) {
-    case BrightnessStates::ExtraLow:
-      // Set the brightness to 25% of the maximum level
-      brightness = 0.25;
-      break;
-    case BrightnessStates::Low:
-      // Set the brightness to 50% of the maximum level
-      brightness = 0.5;
-      break;
-    case BrightnessStates::Medium:
-      // Set the brightness to 75% of the maximum level
-      brightness = 0.75;
-      break;
-    case BrightnessStates::High:
-      // Set the brightness to the maximum level (100%)
-      brightness = 1;
-      break;
-    default:
-      // Print an error message for unrecognized brightness state
-      Serial.println("Invalid Brightness State");
-      break;
-  }
+/*
+  * Initialises the actions for the RGBWLedFSM.
+*/
+void initRGBWLedFSM_Actions() {
+  RGBWLedFSM.addStateAction(RGBWLedStates::Blue, []() {
+    rgbwLed.setRGBW(0, 0, 255, 0);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::Red, []() {
+    rgbwLed.setRGBW(255, 0, 0, 0);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::Green, []() {
+    rgbwLed.setRGBW(0, 255, 0, 0);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::White, []() {
+    rgbwLed.setRGBW(0, 0, 0, 255);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::BlueRed, []() {
+    rgbwLed.setRGBW(255, 0, 255, 0);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::BlueGreen, []() {
+    rgbwLed.setRGBW(0, 255, 255, 0);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::RedGreen, []() {
+    rgbwLed.setRGBW(255, 255, 0, 0);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::RedWhite, []() {
+    rgbwLed.setRGBW(255, 0, 0, 255);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::GreenWhite, []() {
+    rgbwLed.setRGBW(0, 255, 0, 255);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::RedGreenBlue, []() {
+    rgbwLed.setRGBW(255, 255, 255, 0);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::BlueGreenWhite, []() {
+    rgbwLed.setRGBW(0, 255, 255, 255);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::BlueRedGreenWhite, []() {
+    rgbwLed.setRGBW(255, 255, 255, 255);
+  });
+
+  RGBWLedFSM.addStateAction(RGBWLedStates::Cycle, []() {
+    // Cycle through the colours using a sine wave on millis()
+    rgbwLed.setRGBW(
+      127.5 * (1 + sin(millis() / 1000.0)),               // Red
+      127.5 * (1 + sin(millis() / 1000.0 + 2 * PI / 3)),  // Green
+      127.5 * (1 + sin(millis() / 1000.0 + 4 * PI / 3)),  // Blue
+      0);                                                 // White
+  });
 }
 
-/**
- * Handle RGBW state and set the RGBW LED colors based on the current state.
- *
- * This function is responsible for setting the RGBW LED colors based on the current
- * RGBW state. The RGBW LED colors are determined by the 'rgbwStates' variable.
- * If the RGBW state is not recognized, an error message is printed to the serial monitor.
- */
-void handleRGBWState() {
-  switch(RGBWLedFSM.getCurrentState()) {
-    case RGBWLedStates::Blue:
-      setRGBWLed(0, 0, 255, 0);
-      break;
-    case RGBWLedStates::Red:
-      setRGBWLed(255, 0, 0, 0);
-      break;
-    case RGBWLedStates::Green:
-      setRGBWLed(0, 255, 0, 0);
-      break;
-    case RGBWLedStates::White:
-      setRGBWLed(0, 0, 0, 255);
-      break;
-    case RGBWLedStates::BlueRed:
-      setRGBWLed(255, 0, 255, 0);
-      break;
-    case RGBWLedStates::BlueGreen:
-      setRGBWLed(0, 255, 255, 0);
-      break;
-    case RGBWLedStates::RedGreen:
-      setRGBWLed(255, 255, 0, 0);
-      break;
-    case RGBWLedStates::RedWhite:
-      setRGBWLed(255, 0, 0, 255);
-      break;
-    case RGBWLedStates::GreenWhite:
-      setRGBWLed(0, 255, 0, 255);
-      break;
-    case RGBWLedStates::RedGreenBlue:
-      setRGBWLed(255, 255, 255, 0);
-      break;
-    case RGBWLedStates::BlueGreenWhite:
-      setRGBWLed(0, 255, 255, 255);
-      break;
-    case RGBWLedStates::BlueRedGreenWhite:
-      setRGBWLed(255, 255, 255, 255);
-      break;
-    case RGBWLedStates::Cycle:
-      // Cycle through the colours using a sine wave on millis()
-      setRGBWLed(
-        127.5 * (1 + sin(millis() / 1000.0)),               // Red
-        127.5 * (1 + sin(millis() / 1000.0 + 2 * PI / 3)),  // Green
-        127.5 * (1 + sin(millis() / 1000.0 + 4 * PI / 3)),  // Blue
-        0);                                                 // White
-      break;
-    default:
-      Serial.println("Invalid RGBW State");
-      break;
-  }
+/*
+  * Initialises the actions for the MotorFSM.
+*/
+void initMotorFSM_Actions() {
+  MotorFSM.addStateAction(MotorStates::MotorOff, []() {
+    motor.set(0);
+  });
+
+  MotorFSM.addStateAction(MotorStates::Fast, []() {
+    motor.set(255);
+  });
+
+  MotorFSM.addStateAction(MotorStates::Slow, []() {
+    motor.set(100);
+  });
 }
 
-/**
- * Handle motor state and control the motor speed based on the current state.
- *
- * This function is responsible for controlling the motor speed based on the current
- * motor state. The motor speed is controlled by adjusting the analog output value
- * to the MOTOR_BJT pin. If the motor state is not recognized, an error message is
- * printed to the serial monitor.
- *
- * @remarks The function behaviors in different motor states:
- *   - MotorOff: Turns off the motor by setting analog output to 0.
- *   - Fast: Sets the motor speed to maximum (255) using analog output.
- *   - Slow: Sets the motor speed to a moderate value (200) using analog output.
- */
-void handleMotorState() {
-  switch (MotorFSM.getCurrentState()) {
-    case MotorStates::MotorOff:
-      // Turn off the motor by setting analog output to 0
-      analogWrite(MOTOR_BJT, 0);
-      break;
-    case MotorStates::Fast:
-      // Set the motor speed to maximum (255) using analog output
-      analogWrite(MOTOR_BJT, 255);
-      break;
-    case MotorStates::Slow:
-      // Set the motor speed to a moderate value (200) using analog output
-      analogWrite(MOTOR_BJT, 200);
-      break;
-    default:
-      // Print an error message for unrecognized motor state
-      Serial.println("Invalid Motor State");
-      break;
-  }
-}
+/* 
+  * Initialises the actions for the BrightnessFSM.
+*/
+void initBrightnessFSM_Actions() {
+  BrightnessFSM.addStateAction(BrightnessStates::ExtraLow, []() {
+    rgbw_brightness = 20;
+    moon_brightness = 20;
+  });
 
-/**
- * Set the RGBW LED color and adjust brightness.
- *
- * This function sets the color of the RGBW LED by adjusting the analog output values
- * for each color channel (red, green, blue, white) based on the specified values
- * and the current brightness level. The brightness factor is multiplied with the
- * input color values to control the overall brightness of the LED.
- *
- * @param red The intensity of the red color channel (0-255).
- * @param green The intensity of the green color channel (0-255).
- * @param blue The intensity of the blue color channel (0-255).
- * @param white The intensity of the white color channel (0-255).
- */
-void setRGBWLed(int red, int green, int blue, int white) {
-  // Adjust the color intensity using the current brightness level
-  analogWrite(RED_LED, red * brightness);
-  analogWrite(GREEN_LED, green * brightness);
-  analogWrite(BLUE_LED, blue * brightness);
-  analogWrite(WHITE_LED, white * brightness);
+  BrightnessFSM.addStateAction(BrightnessStates::Low, []() {
+    rgbw_brightness = 100;
+    moon_brightness = 100;
+  });
+
+  BrightnessFSM.addStateAction(BrightnessStates::Medium, []() {
+    rgbw_brightness = 150;
+    moon_brightness = 150;
+  });
+
+  BrightnessFSM.addStateAction(BrightnessStates::High, []() {
+    rgbw_brightness = 255;
+    moon_brightness = 255;
+  });
 }
 #pragma endregion
 
@@ -910,16 +851,16 @@ private:
 /*
   * A class representing an LED and its operations.
 */
-class LED {
+class PWM_Device {
   public:
-    LED(int pin) {
+    PWM_Device(int pin) {
       this->pin = pin;
       pinMode(pin, OUTPUT);
     }
 
-    void set(int value) {
+    void set(uint8_t value) {
       if (value == brightness) return; // If the brightness is unchanged, skip the operation
-      if (value < 0 || value > 255) throw "Invalid LED value - must be between 0 and 255"; // If the brightness is out of range, throw an error
+      if (value < 0 || value > 255) throw "Invalid PWM_Device value - must be between 0 and 255"; // If the brightness is out of range, throw an error
       
       brightness = value; // Update the brightness
       analogWrite(pin, brightness); // Set the brightness
@@ -933,10 +874,17 @@ class LED {
 class RGBWLED {
   public:
     RGBWLED(int redPin, int greenPin, int bluePin, int whitePin) {
-      redLED = new LED(redPin);
-      greenLED = new LED(greenPin);
-      blueLED = new LED(bluePin);
-      whiteLED = new LED(whitePin);
+      redLED = new PWM_Device(redPin);
+      greenLED = new PWM_Device(greenPin);
+      blueLED = new PWM_Device(bluePin);
+      whiteLED = new PWM_Device(whitePin);
+    }
+    
+    ~RGBWLED() {
+      delete redLED;
+      delete greenLED;
+      delete blueLED;
+      delete whiteLED;
     }
 
     void set(int red, int green, int blue, int white) {
@@ -947,9 +895,9 @@ class RGBWLED {
     }
 
   private:
-    LED* redLED;
-    LED* greenLED;
-    LED* blueLED;
-    LED* whiteLED;
+    PWM_Device* redLED;
+    PWM_Device* greenLED;
+    PWM_Device* blueLED;
+    PWM_Device* whiteLED;
 };
 #pragma endregion
