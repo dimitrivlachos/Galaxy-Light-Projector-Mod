@@ -1,19 +1,11 @@
 #include "main.h"
 
-// Define and initialize the AsyncWebServer instance
-AsyncWebServer server(80);
-// Define and initialize the AsyncWebSocket instance
-AsyncWebSocket ws("/ws");
+AsyncWebServer server(80); // Define and initialize the AsyncWebServer instance
+AsyncWebSocket ws("/ws"); // Define and initialize the AsyncWebSocket instance
 
 // Task handles for the two core loops
 TaskHandle_t TaskLoopCore0;
 TaskHandle_t TaskLoopCore1;
-
-// Switch state variables
-bool motorSwitchState = false;
-bool brightnessSwitchState = false;
-bool colourSwitchState = false;
-bool stateSwitchState = false;
 
 // Brightness level variable
 float rgbw_brightness = 0.0;
@@ -23,19 +15,6 @@ float moon_brightness = 255;
 #define WIFI_RETRY_DELAY 500 // Delay between WiFi connection attempts (in milliseconds)
 bool wifiConnected = false; // Flag indicating WiFi connection status
 
-#pragma region Function Declarations
-void connectToWiFi(); // Function to connect to WiFi
-
-// WebSocket handling function declarations
-void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
-             void *arg, uint8_t *data, size_t len);
-void handleWebSocketMessage(void *arg, uint8_t *payload, size_t length);
-void initWebSocket();
-String generateJsonForStates();
-void updateClients();
-#pragma endregion
-
-#pragma region Wifi Settings
 // WiFi configuration settings
 const char *SSID = "ssid";
 const char *PASSWORD = "pass";
@@ -43,21 +22,6 @@ const char *HOSTNAME = "GalaxyProjector-Dev";
 const IPAddress STATIC_IP(192, 168, 0, 50);
 const IPAddress GATEWAY(192, 168, 0, 1);
 const IPAddress SUBNET(255, 255, 255, 0);
-#pragma endregion
-
-#pragma region Pin Definitions
-// Pin definitions for various components
-#define RED_LED 17            // Green wire
-#define WHITE_LED 18          // Blue wire
-#define GREEN_LED 19          // White wire
-#define BLUE_LED 21           // Red wire
-#define PROJECTOR_LED 27      // Moon projector
-#define MOTOR_BJT 4           // Motor control
-#define MOTOR_SWITCH 32       // Motor switch
-#define BRIGHTNESS_SWITCH 33  // Brightness switch
-#define COLOUR_SWITCH 25      // Colour switch
-#define POWER_SWITCH 26       // State switch
-#pragma endregion
 
 GenericFSM PowerFSM;
 GenericFSM RGBWLedFSM;
@@ -70,9 +34,9 @@ Switch motorSwitch(MOTOR_SWITCH, INPUT_PULLUP, MotorFSM);
 Switch brightnessSwitch(BRIGHTNESS_SWITCH, INPUT_PULLUP, BrightnessFSM);
 Switch colourSwitch(COLOUR_SWITCH, INPUT_PULLUP, RGBWLedFSM);
 
-RGBWLED rgbwLed;
-PWM_Device moonProjectorLed;
-PWM_Device motor;
+RGBWLED rgbwLed = RGBWLED(RED_LED, GREEN_LED, BLUE_LED, WHITE_LED);
+PWM_Device moonProjectorLed = PWM_Device(PROJECTOR_LED);
+PWM_Device motor = PWM_Device(MOTOR_BJT);
 
 #pragma region HTML
 const char index_html[] PROGMEM = R"rawliteral(
@@ -257,10 +221,6 @@ const char index_html[] PROGMEM = R"rawliteral(
 void setup() {
   Serial.begin(115200);
   Serial.println("Booting");
-
-  rgbwLed = RGBWLED(RED_LED, GREEN_LED, BLUE_LED, WHITE_LED);
-  moonProjectorLed = PWM_Device(PROJECTOR_LED);
-  motor = PWM_Device(MOTOR_BJT);
 
   // Initialise the state actions
   initPowerFSM();
