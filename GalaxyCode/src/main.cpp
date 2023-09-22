@@ -1,12 +1,4 @@
-#include <Arduino.h>
-#include <WiFi.h>
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include <AsyncElegantOTA.h>
-#include <Arduino_Json.h>
-#include <iostream>
-#include <map>
-#include <functional>
+#include "main.h"
 
 // Define and initialize the AsyncWebServer instance
 AsyncWebServer server(80);
@@ -27,36 +19,12 @@ bool stateSwitchState = false;
 float rgbw_brightness = 0.0;
 float moon_brightness = 255;
 
-// Maximum number of WiFi connection attempts
-#define MAX_WIFI_ATTEMPTS 10
-// Delay between WiFi connection attempts (in milliseconds)
-#define WIFI_RETRY_DELAY 500
-// Flag indicating WiFi connection status
-bool wifiConnected = false;
+#define MAX_WIFI_ATTEMPTS 10 // Maximum number of WiFi connection attempts
+#define WIFI_RETRY_DELAY 500 // Delay between WiFi connection attempts (in milliseconds)
+bool wifiConnected = false; // Flag indicating WiFi connection status
 
 #pragma region Function Declarations
-// Core task function declarations
-void OutputLoop(void *pvParameters);
-void ButtonLoop(void *pvParameters);
-
-// Function to connect to WiFi
-void connectToWiFi();
-
-// State handling function declarations
-void initPowerFSM_Actions();
-void initRGBWLedFSM_Actions();
-void initMotorFSM_Actions();
-void initBrightnessFSM_Actions();
-
-void setRGBWLed(int red, int green, int blue, int white);
-void handlePowerState();
-void handleRGBWState();
-void handleMotorState();
-void handleBrightnessState();
-
-// Switch handling function declarations
-void onStateChange();
-
+void connectToWiFi(); // Function to connect to WiFi
 
 // WebSocket handling function declarations
 void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
@@ -91,68 +59,16 @@ const IPAddress SUBNET(255, 255, 255, 0);
 #define POWER_SWITCH 32       // State switch
 #pragma endregion
 
-#pragma region State Definitions
-// Enumerations for various states
-enum PowerStates {
-  PowerOff,
-  On,
-  Project,
-  Count,
-  InitialState = PowerOff
-};
-GenericFSM<PowerStates> PowerFSM(PowerStates::InitialState, onStateChange);
-
-struct RGBWState {
-  int red;
-  int green;
-  int blue;
-  int white;
-};
-
-enum RGBWLedStates {
-  Blue,
-  Red,
-  Green,
-  White,
-  BlueRed,
-  BlueGreen,
-  RedGreen,
-  RedWhite,
-  GreenWhite,
-  RedGreenBlue,
-  BlueGreenWhite,
-  BlueRedGreenWhite,
-  Cycle,
-  Count,
-  InitialState = Blue
-};
-GenericFSM<RGBWLedStates> RGBWLedFSM(RGBWLedStates::InitialState, onStateChange);
-
-enum MotorStates {
-  MotorOff,
-  Fast,
-  Slow,
-  Count,
-  InitialState = MotorOff
-};
-GenericFSM<MotorStates> MotorFSM(MotorStates::InitialState, onStateChange);
-
-enum BrightnessStates {
-  ExtraLow,
-  Low,
-  Medium,
-  High,
-  Count,
-  InitialState = ExtraLow
-};
-GenericFSM<BrightnessStates> BrightnessFSM(BrightnessStates::InitialState, onStateChange);
+GenericFSM PowerFSM;
+GenericFSM RGBWLedFSM;
+GenericFSM MotorFSM;
+GenericFSM BrightnessFSM;
 
 //Switch objects
-Switch<PowerStates> stateSwitch(POWER_SWITCH, INPUT_PULLUP, PowerFSM);
-Switch<MotorStates> motorSwitch(MOTOR_SWITCH, INPUT_PULLUP, MotorFSM);
-Switch<BrightnessStates> brightnessSwitch(BRIGHTNESS_SWITCH, INPUT_PULLUP, BrightnessFSM);
-Switch<RGBWLedStates> colourSwitch(COLOUR_SWITCH, INPUT_PULLUP, RGBWLedFSM);
-#pragma endregion
+Switch stateSwitch(POWER_SWITCH, INPUT_PULLUP, PowerFSM);
+Switch motorSwitch(MOTOR_SWITCH, INPUT_PULLUP, MotorFSM);
+Switch brightnessSwitch(BRIGHTNESS_SWITCH, INPUT_PULLUP, BrightnessFSM);
+Switch colourSwitch(COLOUR_SWITCH, INPUT_PULLUP, RGBWLedFSM);
 
 RGBWLED rgbwLed;
 PWM_Device moonProjectorLed;
@@ -342,15 +258,15 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Booting");
 
-  rgbwLed = new RGBWLED(RED_LED, GREEN_LED, BLUE_LED, WHITE_LED);
-  moonProjectorLed = new PWM_Device(PROJECTOR_LED);
-  motor = new PWM_Device(MOTOR_BJT);
+  rgbwLed = RGBWLED(RED_LED, GREEN_LED, BLUE_LED, WHITE_LED);
+  moonProjectorLed = PWM_Device(PROJECTOR_LED);
+  motor = PWM_Device(MOTOR_BJT);
 
   // Initialise the state actions
-  initPowerFSM_Actions();
-  initRGBWLedFSM_Actions();
-  initMotorFSM_Actions();
-  initBrightnessFSM_Actions();
+  initPowerFSM();
+  initRGBWLedFSM();
+  initMotorFSM();
+  initBrightnessFSM();
 
   connectToWiFi();
   if(wifiConnected) {
@@ -468,7 +384,7 @@ void OutputLoop(void *pvParameters) {
   PowerFSM.performStateAction();
 
   // Skip handling other states if the device is powered off
-  if (PowerFSM.getCurrentState() == PowerStates::PowerOff) {
+  if (PowerFSM.getCurrentState().getState() == "Power Off") {
     return;
   }
 
@@ -485,15 +401,20 @@ void OutputLoop(void *pvParameters) {
 /*
   * Initialises the actions for the PowerFSM.
 */
-void initPowerFSM_Actions() {
-  // If the power is off, turn everything off
-  PowerFSM.addStateAction(PowerStates::PowerOff, []() {
-    rgbwLed.setRGBW(0, 0, 0, 0);
+void initPowerFSM() {
+  State PowerOff = State("Power Off", []() {
+    // If the power is off, turn everything off
+    rgbwLed.set(0, 0, 0, 0);
     moonProjectorLed.set(0);
     motor.set(0);
   });
+  // If the power is off, turn everything off
+  PowerFSM.addState(PowerOff);
 
-  PowerFSM.addStateAction(PowerStates::Project, []() {
+  State PowerOn = State("Power On", []() {/* Empty function since this is used as a flag */});
+  PowerFSM.addState(PowerOn);
+
+  State Project = State("Project", []() {
     moonProjectorLed.set(moon_brightness);
   });
 }
@@ -501,105 +422,124 @@ void initPowerFSM_Actions() {
 /*
   * Initialises the actions for the RGBWLedFSM.
 */
-void initRGBWLedFSM_Actions() {
-  RGBWLedFSM.addStateAction(RGBWLedStates::Blue, []() {
-    rgbwLed.setRGBW(0, 0, 255, 0);
+void initRGBWLedFSM() {
+  State Blue = State("Blue", []() {
+    rgbwLed.set(rgbw_brightness, 0, 0, 0);
   });
+  RGBWLedFSM.addState(Blue);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::Red, []() {
-    rgbwLed.setRGBW(255, 0, 0, 0);
+  State Red = State("Red", []() {
+    rgbwLed.set(0, rgbw_brightness, 0, 0);
   });
+  RGBWLedFSM.addState(Red);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::Green, []() {
-    rgbwLed.setRGBW(0, 255, 0, 0);
+  State Green = State("Green", []() {
+    rgbwLed.set(0, 0, rgbw_brightness, 0);
   });
+  RGBWLedFSM.addState(Green);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::White, []() {
-    rgbwLed.setRGBW(0, 0, 0, 255);
+  State White = State("White", []() {
+    rgbwLed.set(0, 0, 0, rgbw_brightness);
   });
+  RGBWLedFSM.addState(White);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::BlueRed, []() {
-    rgbwLed.setRGBW(255, 0, 255, 0);
+  State BlueRed = State("Blue Red", []() {
+    rgbwLed.set(rgbw_brightness, rgbw_brightness, 0, 0);
   });
+  RGBWLedFSM.addState(BlueRed);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::BlueGreen, []() {
-    rgbwLed.setRGBW(0, 255, 255, 0);
+  State BlueGreen = State("Blue Green", []() {
+    rgbwLed.set(rgbw_brightness, 0, rgbw_brightness, 0);
   });
+  RGBWLedFSM.addState(BlueGreen);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::RedGreen, []() {
-    rgbwLed.setRGBW(255, 255, 0, 0);
+  State RedGreen = State("Red Green", []() {
+    rgbwLed.set(0, rgbw_brightness, rgbw_brightness, 0);
   });
+  RGBWLedFSM.addState(RedGreen);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::RedWhite, []() {
-    rgbwLed.setRGBW(255, 0, 0, 255);
+  State RedWhite = State("Red White", []() {
+    rgbwLed.set(0, rgbw_brightness, 0, rgbw_brightness);
   });
+  RGBWLedFSM.addState(RedWhite);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::GreenWhite, []() {
-    rgbwLed.setRGBW(0, 255, 0, 255);
+  State GreenWhite = State("Green White", []() {
+    rgbwLed.set(0, 0, rgbw_brightness, rgbw_brightness);
   });
+  RGBWLedFSM.addState(GreenWhite);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::RedGreenBlue, []() {
-    rgbwLed.setRGBW(255, 255, 255, 0);
+  State RedGreenBlue = State("Red Green Blue", []() {
+    rgbwLed.set(0, rgbw_brightness, rgbw_brightness, rgbw_brightness);
   });
+  RGBWLedFSM.addState(RedGreenBlue);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::BlueGreenWhite, []() {
-    rgbwLed.setRGBW(0, 255, 255, 255);
+  State BlueGreenWhite = State("Blue Green White", []() {
+    rgbwLed.set(rgbw_brightness, 0, rgbw_brightness, rgbw_brightness);
   });
+  RGBWLedFSM.addState(BlueGreenWhite);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::BlueRedGreenWhite, []() {
-    rgbwLed.setRGBW(255, 255, 255, 255);
+  State BlueRedGreenWhite = State("Blue Red Green White", []() {
+    rgbwLed.set(rgbw_brightness, rgbw_brightness, rgbw_brightness, rgbw_brightness);
   });
+  RGBWLedFSM.addState(BlueRedGreenWhite);
 
-  RGBWLedFSM.addStateAction(RGBWLedStates::Cycle, []() {
-    // Cycle through the colours using a sine wave on millis()
-    rgbwLed.setRGBW(
+  State Cycle = State("Cycle", []() {
+    rgbwLed.set(
       127.5 * (1 + sin(millis() / 1000.0)),               // Red
       127.5 * (1 + sin(millis() / 1000.0 + 2 * PI / 3)),  // Green
       127.5 * (1 + sin(millis() / 1000.0 + 4 * PI / 3)),  // Blue
-      0);                                                 // White
+      0); 
   });
+  RGBWLedFSM.addState(Cycle);
 }
 
 /*
   * Initialises the actions for the MotorFSM.
 */
-void initMotorFSM_Actions() {
-  MotorFSM.addStateAction(MotorStates::MotorOff, []() {
+void initMotorFSM() {
+  State MotorOff = State("Motor Off", []() {
     motor.set(0);
   });
+  MotorFSM.addState(MotorOff);
 
-  MotorFSM.addStateAction(MotorStates::Fast, []() {
+  State MotorFast = State("Motor Fast", []() {
     motor.set(255);
   });
+  MotorFSM.addState(MotorFast);
 
-  MotorFSM.addStateAction(MotorStates::Slow, []() {
+  State MotorSlow = State("Motor Slow", []() {
     motor.set(100);
   });
+  MotorFSM.addState(MotorSlow);
 }
 
 /* 
   * Initialises the actions for the BrightnessFSM.
 */
-void initBrightnessFSM_Actions() {
-  BrightnessFSM.addStateAction(BrightnessStates::ExtraLow, []() {
+void initBrightnessFSM() {
+  State BrightnessExtraLow = State("Extra Low", []() {
     rgbw_brightness = 20;
     moon_brightness = 20;
   });
+  BrightnessFSM.addState(BrightnessExtraLow);
 
-  BrightnessFSM.addStateAction(BrightnessStates::Low, []() {
-    rgbw_brightness = 100;
-    moon_brightness = 100;
+  State BrightnessLow = State("Low", []() {
+    rgbw_brightness = 50;
+    moon_brightness = 50;
   });
+  BrightnessFSM.addState(BrightnessLow);
 
-  BrightnessFSM.addStateAction(BrightnessStates::Medium, []() {
+  State BrightnessMedium = State("Medium", []() {
     rgbw_brightness = 150;
     moon_brightness = 150;
   });
+  BrightnessFSM.addState(BrightnessMedium);
 
-  BrightnessFSM.addStateAction(BrightnessStates::High, []() {
+  State BrightnessHigh = State("High", []() {
     rgbw_brightness = 255;
     moon_brightness = 255;
   });
+  BrightnessFSM.addState(BrightnessHigh);
 }
 #pragma endregion
 
@@ -691,10 +631,10 @@ String generateJsonForStates() {
   JSONVar states;
 
   // Add the states to the JSON object
-  states["Power"] = static_cast<int>(PowerFSM.getCurrentState());
-  states["Brightness"] = static_cast<int>(BrightnessFSM.getCurrentState());
-  states["Colour"] = static_cast<int>(RGBWLedFSM.getCurrentState());
-  states["Motor"] = static_cast<int>(MotorFSM.getCurrentState());
+  states["Power"] = static_cast<int>(PowerFSM.getCurrentStateIndex());
+  states["Brightness"] = static_cast<int>(BrightnessFSM.getCurrentStateIndex());
+  states["Colour"] = static_cast<int>(RGBWLedFSM.getCurrentStateIndex());
+  states["Motor"] = static_cast<int>(MotorFSM.getCurrentStateIndex());
 
   // Convert the JSON object to a string
   String json = JSON.stringify(states);
@@ -710,194 +650,4 @@ void updateClients() {
   // Send the JSON string to all connected clients
   ws.textAll(json);
 }
-#pragma endregion
-
-#pragma region Objects
-/*
-  * A class representing a switch and its functionality.
-  * This class is used to handle switch debouncing and state changes.
-*/
-template <typename EnumType>
-class Switch {
-  public:
-    Switch(uint8_t pin, uint8_t mode, GenericFSM<EnumType>& fsm) {
-      this->pin = pin;
-      this->fsm = fsm;
-      pinMode(pin, mode);
-    }
-
-    /*
-      * Checks the state of the switch and updates the switch state accordingly.
-      * Must be called in the main loop.
-    */
-    void update() {
-      unsigned long lastDebounceTime = 0;
-      unsigned long timeReleased = 0;
-      const unsigned long debounceDelay = 100;   // Debounce delay in milliseconds
-      unsigned long currentMillis = millis();
-
-      int switchReading = digitalRead(pin);
-
-      if (switchReading == LOW) { // If the switch is pressed
-        if (!switchState) {
-          switchState = true; // Update the switch state
-          fsm.nextState(); // Advance to the next state in the FSM
-
-          // Print the current state to the serial monitor
-          Serial.print("Switch Pressed - ");
-          Serial.println(static_cast<int>(fsm.getCurrentState()));
-        }
-      } // No time debounce is required for the switch being pressed as the change in state provides this functionality
-      
-      else { // If the switch is released
-        // Calculate the time since the switch was released
-        unsigned long timeSinceRelease = currentMillis - timeReleased;
-        if(switchState && timeSinceRelease > debounceDelay) {
-          switchState = false;
-          timeReleased = currentMillis;
-        }
-      } // A debounce delay is required for the switch being released as the change in state does not prevent the switch from activating immediately after being released
-    }
-
-  private:
-    uint8_t pin;
-    bool switchState = false;
-    GenericFSM<EnumType>& fsm;
-};
-
-/**
- * @brief A generic Finite State Machine (FSM) template.
- *
- * @tparam StateType The type representing states (an enum).
- */
-template<typename StateType>
-class GenericFSM {
-public:
-    using TransitionFunction = std::function<void()>;
-    using StateChangeCallback = std::function<void(StateType)>;
-
-    /**
-     * @brief Initializes the FSM with an enum of states.
-     *
-     * @param initialState The initial state of the FSM.
-     * @param onStateChangeCallback A callback function to be invoked when the state changes.
-     */
-    explicit GenericFSM(StateType initialState, std::function<void()> onStateChangeCallback = nullptr) 
-      : currentState(initialState), onStateChangeCallback(onStateChangeCallback) {} // Explicit means that the constructor cannot be used for implicit conversions and copy-initialization
-
-    /**
-     * @brief Advances to the next state in the enum.
-     */
-    void nextState() {
-        // Calculate the next state based on the current state
-        currentState = static_cast<StateType>((static_cast<int>(currentState) + 1) % static_cast<int>(StateType::Count));
-        onStateChange(); // Invoke the callback function
-    }
-
-    /**
-     * @brief Sets the state to a specified state.
-     *
-     * @param newState The state to set.
-     */
-    void setState(StateType newState) {
-        currentState = newState;
-        onStateChange(); // Invoke the callback function
-    }
-
-    /**
-     * @brief Retrieves the current state of the FSM.
-     *
-     * @return The current state.
-     */
-    StateType getCurrentState() const {
-        return currentState;
-    }
-
-    /**
-     * @brief Adds an action to be performed when in a specified state.
-     *
-     * @param state The state to add the action to.
-     * @param action The action to be performed.
-     */
-    void addStateAction(StateType state, TransitionFunction action) {
-        stateActions[state] = action;
-    }
-
-    /**
-     * @brief performs the action associated with the current state.
-     */
-    void performStateAction() {
-        // If the current state does not have an associated action, return
-        if (stateActions.find(currentState) == stateActions.end()) {
-            return;
-        }
-        // Invoke the action associated with the current state
-        stateActions[currentState]();
-    }
-
-private:
-    StateType currentState;
-    StateChangeCallback onStateChangeCallback; // A callback function to be invoked when the state changes
-    std::map<StateType, TransitionFunction> stateActions; // A map of states and their corresponding actions
-
-    void onStateChange() {
-        // Invoke the callback function if it is not null
-        if (onStateChangeCallback != nullptr) {
-            onStateChangeCallback();
-        }
-    }
-};
-
-/*
-  * A class representing an LED and its operations.
-*/
-class PWM_Device {
-  public:
-    PWM_Device(int pin) {
-      this->pin = pin;
-      pinMode(pin, OUTPUT);
-    }
-
-    void set(uint8_t value) {
-      if (value == brightness) return; // If the brightness is unchanged, skip the operation
-      if (value < 0 || value > 255) throw "Invalid PWM_Device value - must be between 0 and 255"; // If the brightness is out of range, throw an error
-      
-      brightness = value; // Update the brightness
-      analogWrite(pin, brightness); // Set the brightness
-    }
-
-  private:
-    int pin;
-    int brightness = 0;
-};
-
-class RGBWLED {
-  public:
-    RGBWLED(int redPin, int greenPin, int bluePin, int whitePin) {
-      redLED = new PWM_Device(redPin);
-      greenLED = new PWM_Device(greenPin);
-      blueLED = new PWM_Device(bluePin);
-      whiteLED = new PWM_Device(whitePin);
-    }
-    
-    ~RGBWLED() {
-      delete redLED;
-      delete greenLED;
-      delete blueLED;
-      delete whiteLED;
-    }
-
-    void set(int red, int green, int blue, int white) {
-      redLED->set(red);
-      greenLED->set(green);
-      blueLED->set(blue);
-      whiteLED->set(white);
-    }
-
-  private:
-    PWM_Device* redLED;
-    PWM_Device* greenLED;
-    PWM_Device* blueLED;
-    PWM_Device* whiteLED;
-};
 #pragma endregion
