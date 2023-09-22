@@ -1,16 +1,19 @@
 #include "state.h"
 
 State::State()
-: state(""), action(nullptr) {}
+: name(""), action(nullptr) {}
 
 State::State(std::string name) 
-: state(name), action(nullptr) {}
+: name(name), action(nullptr) {}
 
-State::State(std::string name, std::function<void()> action) 
-: state(name), action(action) {}
+State::State(std::string name, const std::function<void()> action) 
+: name(name), action(action) {}
+
+State::State(const State& other)
+: name(other.name), action(other.action) {}
 
 std::string State::getState() {
-  return state;
+  return name;
 }
 
 void State::performAction() {
@@ -19,8 +22,8 @@ void State::performAction() {
   action();
 }
 
-void State::setAction(std::function<void()> action) {
-  this->action = action;
+void State::setAction(const std::function<void()> action) {
+  this->action = std::move(action);
 }
 
 std::function<void()> State::getAction() {
@@ -28,5 +31,5 @@ std::function<void()> State::getAction() {
 }
 
 bool State::operator==(const State& other) const {
-  return state == other.state;
+  return name == other.name;
 }

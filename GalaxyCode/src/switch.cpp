@@ -23,7 +23,7 @@ void Switch::update() {
       fsm.nextState(); // Advance to the next state in the FSM
 
       // Print the current state to the serial monitor
-      Serial.printf("Current state: %s\n", fsm.getCurrentState().getState().c_str());
+      Serial.printf("Current state: %s\n", fsm.getCurrentState().name.c_str());
     }
   } // No time debounce is required for the switch being pressed as the change in state provides this functionality
   

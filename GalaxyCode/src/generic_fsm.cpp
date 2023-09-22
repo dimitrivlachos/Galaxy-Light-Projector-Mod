@@ -15,6 +15,11 @@ GenericFSM::GenericFSM(
  */
 void GenericFSM::addState(State state) {
     iterativeStates.push_back(state);
+
+    // If this is the first state added, set it as the current state
+    if (iterativeStates.size() == 1) {
+        currentState = state;
+    }
 }
 
 /**

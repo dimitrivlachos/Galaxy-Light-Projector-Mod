@@ -37,10 +37,10 @@ void updateClients();
 
 #pragma region Wifi Settings
 // WiFi configuration settings
-const char *SSID = "VM1732529";
-const char *PASSWORD = "dqg9bbhkRbCq";
+const char *SSID = "ssid";
+const char *PASSWORD = "pass";
 const char *HOSTNAME = "GalaxyProjector-Dev";
-const IPAddress STATIC_IP(192, 168, 0, 49);
+const IPAddress STATIC_IP(192, 168, 0, 50);
 const IPAddress GATEWAY(192, 168, 0, 1);
 const IPAddress SUBNET(255, 255, 255, 0);
 #pragma endregion
@@ -299,8 +299,8 @@ void setup() {
     NULL,                 /* parameter of the task */
     1,                    /* priority of the task */
     &TaskLoopCore0,       /* Task handle to keep track of created task */
-    1);                   /* pin task to core 1 */          
-  delay(500); 
+    1);                   /* pin task to core 1 */
+  delay(500);
 
   Serial.print("Initialising TaskLoopCore0... ");
   xTaskCreatePinnedToCore(
@@ -311,7 +311,7 @@ void setup() {
     1,                    /* priority of the task */
     &TaskLoopCore1,       /* Task handle to keep track of created task */
     0);                   /* pin task to core 0 */
-  delay(500); 
+  delay(500);
 
   Serial.println("Tasks initialised");
   Serial.println("Setup complete!");
@@ -363,7 +363,6 @@ void loop() {
 }
 
 #pragma region Output Handlers
-bool initOutput = false;
 /**
  * Task function to handle the output loop on a specific core.
  *
@@ -374,28 +373,28 @@ bool initOutput = false;
  * @param pvParameters A pointer to the parameters passed to the task (not used in this case).
  */
 void OutputLoop(void *pvParameters) {
-  if (!initOutput) {
-    // Print the core ID for debugging purposes
-    Serial.print("TaskLoopCore1 running on core ");
-    Serial.println(xPortGetCoreID());
-    initOutput = true;
+  // Print the core ID for debugging purposes
+  Serial.print("TaskLoopCore1 running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;) {
+    // Handle power state regardless of other states
+    PowerFSM.performStateAction();
+
+    // Skip handling other states if the device is powered off
+    if (strcmp(PowerFSM.getCurrentState().name.c_str(), "Power Off") == 0) {
+      continue;
+    }
+
+    // Handle brightness state
+    BrightnessFSM.performStateAction();
+
+    // Handle RGBW state
+    RGBWLedFSM.performStateAction();
+
+    // Handle motor state
+    MotorFSM.performStateAction();
   }
-  // Handle power state regardless of other states
-  PowerFSM.performStateAction();
-
-  // Skip handling other states if the device is powered off
-  if (PowerFSM.getCurrentState().getState() == "Power Off") {
-    return;
-  }
-
-  // Handle brightness state
-  BrightnessFSM.performStateAction();
-
-  // Handle RGBW state
-  RGBWLedFSM.performStateAction();
-
-  // Handle motor state
-  MotorFSM.performStateAction();
 }
 
 /*
@@ -408,7 +407,6 @@ void initPowerFSM() {
     moonProjectorLed.set(0);
     motor.set(0);
   });
-  // If the power is off, turn everything off
   PowerFSM.addState(PowerOff);
 
   State PowerOn = State("Power On", []() {/* Empty function since this is used as a flag */});
@@ -417,6 +415,7 @@ void initPowerFSM() {
   State Project = State("Project", []() {
     moonProjectorLed.set(moon_brightness);
   });
+  PowerFSM.addState(Project);
 }
 
 /*
@@ -485,12 +484,18 @@ void initRGBWLedFSM() {
 
   State Cycle = State("Cycle", []() {
     rgbwLed.set(
-      127.5 * (1 + sin(millis() / 1000.0)),               // Red
-      127.5 * (1 + sin(millis() / 1000.0 + 2 * PI / 3)),  // Green
-      127.5 * (1 + sin(millis() / 1000.0 + 4 * PI / 3)),  // Blue
+      rgbw_brightness * (0.5 * (1 + sin(millis() / 1000.0))),               // Red
+      rgbw_brightness * (0.5 * (1 + sin(millis() / 1000.0 + 2 * PI / 3))),  // Green
+      rgbw_brightness * (0.5 * (1 + sin(millis() / 1000.0 + 4 * PI / 3))),  // Blue
       0); 
   });
   RGBWLedFSM.addState(Cycle);
+
+  State Pulse = State("Pulse", []() {
+    float brightness = rgbw_brightness * (0.5 * (1 + sin(millis() / 1000.0)));
+    rgbwLed.set(brightness, brightness, brightness, brightness);      
+  });
+  RGBWLedFSM.addState(Pulse);
 }
 
 /*
@@ -544,7 +549,6 @@ void initBrightnessFSM() {
 #pragma endregion
 
 #pragma region State Handlers
-bool initButton = false;
 /**
  * Task function for monitoring and handling switch states.
  *
@@ -555,19 +559,18 @@ bool initButton = false;
  * @param pvParameters Pointer to task parameters (not used in this case).
  */
 void ButtonLoop( void * pvParameters ){
-  if (!initButton) {
-    Serial.print("TaskLoopCore1 running on core ");
-    Serial.println(xPortGetCoreID());
-    initButton = true;
+  Serial.print("TaskLoopCore0 running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;) {
+    motorSwitch.update();
+    brightnessSwitch.update();
+    colourSwitch.update();
+    stateSwitch.update();
+    
+    // Delay for 10ms to prevent the task from hogging the CPU
+    vTaskDelay(10 / portTICK_PERIOD_MS);
   }
-  
-  motorSwitch.update();
-  brightnessSwitch.update();
-  colourSwitch.update();
-  stateSwitch.update();
-  
-  // Delay for 10ms to prevent the task from hogging the CPU
-  vTaskDelay(10 / portTICK_PERIOD_MS);
 }
 
 void onStateChange() {
