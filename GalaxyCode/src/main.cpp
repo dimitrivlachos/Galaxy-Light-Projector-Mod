@@ -37,10 +37,10 @@ void updateClients();
 
 #pragma region Wifi Settings
 // WiFi configuration settings
-const char *SSID = "ssid";
-const char *PASSWORD = "pass";
+const char *SSID = "VM1732529";
+const char *PASSWORD = "dqg9bbhkRbCq";
 const char *HOSTNAME = "GalaxyProjector-Dev";
-const IPAddress STATIC_IP(192, 168, 0, 50);
+const IPAddress STATIC_IP(192, 168, 0, 49);
 const IPAddress GATEWAY(192, 168, 0, 1);
 const IPAddress SUBNET(255, 255, 255, 0);
 #pragma endregion

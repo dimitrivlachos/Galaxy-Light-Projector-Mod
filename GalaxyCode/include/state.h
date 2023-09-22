@@ -14,6 +14,7 @@ public:
     State();
     State(std::string name);
     State(std::string name, std::function<void()> action);
+    State(const State& other); // copy constructor
 
     std::string getState();
     void performAction();
