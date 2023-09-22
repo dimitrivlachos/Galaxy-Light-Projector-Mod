@@ -53,10 +53,10 @@ const IPAddress SUBNET(255, 255, 255, 0);
 #define BLUE_LED 21           // Red wire
 #define PROJECTOR_LED 27      // Moon projector
 #define MOTOR_BJT 4           // Motor control
-#define MOTOR_SWITCH 26       // Motor switch
-#define BRIGHTNESS_SWITCH 25  // Brightness switch
-#define COLOUR_SWITCH 33      // Colour switch
-#define POWER_SWITCH 32       // State switch
+#define MOTOR_SWITCH 32       // Motor switch
+#define BRIGHTNESS_SWITCH 33  // Brightness switch
+#define COLOUR_SWITCH 25      // Colour switch
+#define POWER_SWITCH 26       // State switch
 #pragma endregion
 
 GenericFSM PowerFSM;
