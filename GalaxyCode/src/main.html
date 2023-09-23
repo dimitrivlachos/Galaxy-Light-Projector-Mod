@@ -233,6 +233,8 @@
     <script>
       var gateway = `ws://${window.location.hostname}/ws`;
       var websocket;
+      var maxConnectionAttempts = 10;
+      var connectionAttempts = 0;
       var statesDict = {
         "Power": ['🌑', '🌓', '🌕'],
         "Brightness": ['🌒', '🌓', '🌔', '🌕'],
@@ -243,6 +245,7 @@
   
       function initWebSocket() {
         console.log('Trying to open a WebSocket connection...');
+        connectionAttempts++;
         websocket = new WebSocket(gateway);
         websocket.onopen    = onOpen;
         websocket.onclose   = onClose;
@@ -251,13 +254,16 @@
   
       function onOpen(event) {
         console.log('Connection opened');
+        connectionAttempts = 0;
         // Update the state of the buttons with the data received from the server
         sendMessage('getStates');
       }
   
       function onClose(event) {
         console.log('Connection closed');
-        setTimeout(initWebSocket, 2000);
+        if (connectionAttempts < maxConnectionAttempts) {
+          setTimeout(initWebSocket, 2000);
+        }
       }
   
       function onMessage(event) {
@@ -395,6 +401,11 @@
       }
 
       function sendMessage(id, mode, value) {
+        // If there is no connection with the WebSocket, return
+        if (!websocket || websocket.readyState === 3) {
+          console.log('WebSocket connection not established, message ' + id + ' not sent');
+          return;
+        }
         // Build message in JSON format
         var message = JSON.stringify({
           'id': id,
