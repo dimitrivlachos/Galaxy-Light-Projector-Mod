@@ -388,7 +388,7 @@
 
       function sendColourValues(red, green, blue, white) {
         // String formatted array of color values
-        var colorValues = [redValue, greenValue, blueValue, whiteValue];
+        var colorValues = [red, green, blue, white];
 
         // Send the updated color values to the WebSocket
         sendMessage(id.Colour, modes.custom, colorValues)
