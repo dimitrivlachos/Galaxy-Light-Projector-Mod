@@ -294,6 +294,8 @@
       console.log('Connection closed');
       if (connectionAttempts < maxConnectionAttempts) {
         setTimeout(initWebSocket, 2000);
+      } else {
+        console.log('Maximum connection attempts reached');
       }
     }
 
