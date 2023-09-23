@@ -66,17 +66,59 @@
       gap: 20px;
       margin-top: 1rem;
     }
-    
-    /* Style for sliders */
-    input[type="range"] {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 10px;
-      background: #555;
-      outline: none;
-      opacity: 0.7;
-      -webkit-transition: .2s;
-      transition: opacity .2s;
+
+    /* Toggle Switch */
+    .switch {
+      display: inline-block;
+      position: relative;
+      width: 60px;
+      height: 34px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
     }
 
     /* Style for sliders when active */
@@ -107,35 +149,84 @@
     .color-slider {
       margin-bottom: 15px;
     }
+
+    .label {
+      font-size: 1.2rem;
+      font-weight: bold;
+      display: inline-block; /* Make labels inline with the sliders */
+      width: 30px; /* Adjust the width to your preference */
+      text-align: center; /* Center-align the label text */
+      margin-right: 10px; /* Add some spacing between labels and sliders */
+    }
   </style>
 </head>
 <body>
   <div class="topnav">
     <h1>🌠 Galaxy Projector 🌌</h1>
   </div>
+  <div class="mode-selector">
+    <label class="switch">
+      <input type="checkbox" id="modeToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
   <div class="content">
     <div class="grid-container">
+
+      <!-- Cards -->
+      <!-- Power -->
       <div class="card">
         <h2>Power</h2>
-        <p><button id="Power" class="button">⚡️</button></p>
+        <p><button id="PowerButton" class="button">⚡️</button></p>
         <p class="state" id="PowerState">State: </p>
       </div>
-      <div class="card">
+      
+      <!-- Brightness -->
+      <div class="card" id="BrightnessCard">
         <h2>Brightness</h2>
-        <input type="range" id="BrightnessSlider" min="0" max="255" value="0">
+        <div id="BrightnessButtonsContainer">
+          <p><button id="BrightnessButton" class="button">☀️</button></p>
+        </div>
+        <div id="BrightnessSlidersContainer" style="display: none;">
+          <h2>☀️</h2>
+          <input type="range" id="BrightnessRange" min="0" max="100" value="50">
+        </div>
         <p class="state" id="BrightnessState">State: </p>
       </div>
-      <div class="card">
-        <h2>Colour</h2>
-        <input type="color" id="ColourPicker" value="#000000">
-        <input type="range" class="color-slider" id="WhiteSlider" min="0" max="255" value="0">
+      
+      <!-- Color -->
+      <div class="card" id="ColourCard">
+        <h2>Color</h2>
+        <div id="ColourButtonsContainer">
+          <p><button id="ColourButton" class="button">🌈</button></p>
+        </div>
+        <div id="ColourSlidersContainer" style="display: none;">
+          <h2>🌈</h2>
+          <label class="label" for="RedSlider" style="color: #ff0000;">🔴</label>
+          <input type="range" id="RedSlider" min="0" max="255" value="128" style="background-color: red;">
+          <label class="label" for="GreenSlider" style="color: #00ff00;">🟢</label>
+          <input type="range" id="GreenSlider" min="0" max="255" value="128">
+          <label class="label" for="BlueSlider" style="color: #0000ff;">🔵</label>
+          <input type="range" id="BlueSlider" min="0" max="255" value="128">
+          <label class="label" for="WhiteSlider" style="color: #ffffff;">⚪</label>
+          <input type="range" id="WhiteSlider" min="0" max="255" value="128">
+        </div>
         <p class="state" id="ColourState">State: </p>
       </div>
-      <div class="card">
+
+      <!-- Motor -->
+      <div class="card" id="MotorCard">
         <h2>Spin</h2>
-        <input type="range" id="MotorSlider" min="0" max="255" value="0">
+        <div id="MotorButtonsContainer">
+          <p><button id="MotorButton" class="button">💫</button></p>
+        </div>
+        <div id="MotorSliderContainer" style="display: none;">
+          <h2>💫</h2>
+          <input type="range" id="MotorSlider" min="0" max="100" value="50">
+        </div>
         <p class="state" id="MotorState">State: </p>
       </div>
+
       <!-- Add more cards here -->
     </div>
   </div>
@@ -191,14 +282,15 @@
       function onLoad(event) {
         initWebSocket();
         initButtons();
+        initModeSelector();
       }
   
       function initButtons() {
         // Initialize the buttons with their respective ids and listeners
-        addButtonListener("Power");
-        addButtonListener("Brightness");
-        addButtonListener("Colour");
-        addButtonListener("Motor");
+        addButtonListener("PowerButton");
+        addButtonListener("BrightnessButton");
+        addButtonListener("ColourButton");
+        addButtonListener("MotorButton");
       }
   
       function addButtonListener(buttonId) {
@@ -207,6 +299,43 @@
           sendMessage(buttonId);
         });
         button.buttonId = buttonId; // Store the button's id as a property for later use
+      }
+
+      function initModeSelector() {
+        var modeToggle = document.getElementById('modeToggle');
+        modeToggle.addEventListener('change', function () {
+          var isChecked = modeToggle.checked;
+
+          // Toggle visibility of the containers (buttons and sliders) based on the mode-selector switch
+          var brightnessButtonsContainer = document.getElementById('BrightnessButtonsContainer');
+          var brightnessSlidersContainer = document.getElementById('BrightnessSlidersContainer');
+          var colorButtonsContainer = document.getElementById('ColourButtonsContainer');
+          var colorSlidersContainer = document.getElementById('ColourSlidersContainer');
+          var motorButtonsContainer = document.getElementById('MotorButtonsContainer');
+          var motorSliderContainer = document.getElementById('MotorSliderContainer');
+
+          if (isChecked) {
+            // Switch to range sliders
+            brightnessButtonsContainer.style.display = 'none';
+            brightnessSlidersContainer.style.display = 'block';
+
+            colorButtonsContainer.style.display = 'none';
+            colorSlidersContainer.style.display = 'block';
+
+            motorButtonsContainer.style.display = 'none';
+            motorSliderContainer.style.display = 'block';
+          } else {
+            // Switch back to buttons
+            brightnessButtonsContainer.style.display = 'block';
+            brightnessSlidersContainer.style.display = 'none';
+
+            colorButtonsContainer.style.display = 'block';
+            colorSlidersContainer.style.display = 'none';
+
+            motorButtonsContainer.style.display = 'block';
+            motorSliderContainer.style.display = 'none';
+          }
+        });
       }
   
       function sendMessage(buttonId) {
