@@ -236,7 +236,7 @@
       var statesDict = {
         "Power": ['🌑', '🌓', '🌕'],
         "Brightness": ['🌒', '🌓', '🌔', '🌕'],
-        "Colour": ['🔵', '🔴', '🟢', '⚪️', '🔵🔴', '🔵🟢', '🔴🟢', '🔴⚪️', '🟢⚪️', '🔴🟢🔵', '🔵🟢⚪️', '🔵🔴🟢⚪️', '🔄'],
+        "Colour": ['🔵', '🔴', '🟢', '⚪️', '🔵🔴', '🔵🟢', '🔴🟢', '🔴⚪️', '🟢⚪️', '🔴🟢🔵', '🔵🟢⚪️', '🔵🔴🟢⚪️', '🔄', '💗'],
         "Motor": ['🛑', '🐇', '🐢']
       };
       window.addEventListener('load', onLoad);
@@ -283,23 +283,23 @@
         initWebSocket();
         initButtons();
         initModeSelector();
+        initSliderListeners();
       }
   
       function initButtons() {
-        // Initialize the buttons with their respective ids and listeners
-        addButtonListener("PowerButton");
-        addButtonListener("BrightnessButton");
-        addButtonListener("ColourButton");
-        addButtonListener("MotorButton");
-      }
-  
-      function addButtonListener(buttonId) {
-        var button = document.getElementById(buttonId);
-        button.addEventListener('click', function() {
-          sendMessage(buttonId);
-        });
-        button.buttonId = buttonId; // Store the button's id as a property for later use
-      }
+      // Initialize the buttons with their respective ids and listeners
+      addButtonListener("PowerButton", id.Power);
+      addButtonListener("BrightnessButton", id.Brightness);
+      addButtonListener("ColourButton", id.Colour);
+      addButtonListener("MotorButton", id.Motor);
+    }
+
+    function addButtonListener(buttonId, messageId) {
+      var button = document.getElementById(buttonId);
+      button.addEventListener('click', function () {
+        sendMessage(messageId, modes.set, 1);
+      });
+    }
 
       function initModeSelector() {
         var modeToggle = document.getElementById('modeToggle');
@@ -337,10 +337,86 @@
           }
         });
       }
-  
-      function sendMessage(buttonId) {
-        websocket.send(buttonId); // Send the button's id as a message to the ESP
+
+      // Function to initialize slider listeners
+      function initSliderListeners() {
+        // Get the Brightness slider element
+        var brightnessSlider = document.getElementById('BrightnessRange');
+
+        // Add an 'input' event listener to detect value changes
+        brightnessSlider.addEventListener('input', function () {
+          // Get the current value of the Brightness slider
+          var brightnessValue = brightnessSlider.value;
+
+          sendMessage(id.Brightness, modes.custom, brightnessValue);
+        });
+
+        // Get the Color sliders
+        var redSlider = document.getElementById('RedSlider');
+        var greenSlider = document.getElementById('GreenSlider');
+        var blueSlider = document.getElementById('BlueSlider');
+        var whiteSlider = document.getElementById('WhiteSlider');
+
+        // Add an 'input' event listener to detect value changes
+        redSlider.addEventListener('input', function () {
+          sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
+        });
+
+        greenSlider.addEventListener('input', function () {
+          sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
+        });
+
+        blueSlider.addEventListener('input', function () {
+          sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
+        });
+
+        whiteSlider.addEventListener('input', function () {
+          sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
+        });
+
+        // Get the Motor slider element
+        var motorSlider = document.getElementById('MotorSlider');
+
+        // Add an 'input' event listener to detect value changes
+        motorSlider.addEventListener('input', function () {
+          // Get the current value of the Motor slider
+          var motorValue = motorSlider.value;
+
+          sendMessage(id.Motor, modes.custom, motorValue);
+        });
       }
+
+      function sendColourValues(red, green, blue, white) {
+        // String formatted array of color values
+        var colorValues = [redValue, greenValue, blueValue, whiteValue];
+
+        // Send the updated color values to the WebSocket
+        sendMessage(id.Colour, modes.custom, colorValues)
+      }
+
+      function sendMessage(id, mode, value) {
+        // Build message in JSON format
+        var message = JSON.stringify({
+          'id': id,
+          'mode': mode,
+          'value': value
+        });
+        console.log('Sending: ' + message);
+        websocket.send(message); // Send the button's id as a message to the ESP
+      }
+
+      const id = {
+        'Power': 0,
+        'Brightness': 1,
+        'Colour': 2,
+        'Motor': 3
+      };
+
+      // Enum for modes
+      const modes = {
+        'set': 0,
+        'custom': 1
+      };
     </script>
 </body>
 </html>
