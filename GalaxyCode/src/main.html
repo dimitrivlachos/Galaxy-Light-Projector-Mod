@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
   <title>Galaxy Projector</title>
   <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
@@ -11,28 +12,34 @@
       background-color: #111111;
       color: #ffffff;
     }
+
     h1 {
       font-size: 2rem;
       margin: 1rem;
     }
+
     h2 {
       font-size: 1.8rem;
       font-weight: bold;
       color: #00bfff;
     }
+
     .topnav {
       overflow: hidden;
       background-color: #111111;
       padding: 1rem;
     }
+
     body {
       margin: 0;
     }
+
     .content {
       padding: 2rem;
       max-width: 800px;
       margin: 0 auto;
     }
+
     .card {
       background-color: #1a1a1a;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
@@ -40,6 +47,7 @@
       border-radius: 10px;
       text-align: center;
     }
+
     .button {
       padding: 15px 50px;
       font-size: 24px;
@@ -51,15 +59,18 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     .button:active {
       background-color: #0099cc;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
       transform: translateY(2px);
     }
+
     .state {
       font-size: 1.2rem;
       color: #8c8c8c;
     }
+
     .grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -107,15 +118,15 @@
       border-radius: 50%;
     }
 
-    input:checked + .slider {
+    input:checked+.slider {
       background-color: #2196F3;
     }
 
-    input:focus + .slider {
+    input:focus+.slider {
       box-shadow: 0 0 1px #2196F3;
     }
 
-    input:checked + .slider:before {
+    input:checked+.slider:before {
       -webkit-transform: translateX(26px);
       -ms-transform: translateX(26px);
       transform: translateX(26px);
@@ -153,22 +164,21 @@
     .label {
       font-size: 1.2rem;
       font-weight: bold;
-      display: inline-block; /* Make labels inline with the sliders */
-      width: 30px; /* Adjust the width to your preference */
-      text-align: center; /* Center-align the label text */
-      margin-right: 10px; /* Add some spacing between labels and sliders */
+      display: inline-block;
+      /* Make labels inline with the sliders */
+      width: 30px;
+      /* Adjust the width to your preference */
+      text-align: center;
+      /* Center-align the label text */
+      margin-right: 10px;
+      /* Add some spacing between labels and sliders */
     }
   </style>
 </head>
+
 <body>
   <div class="topnav">
     <h1>🌠 Galaxy Projector 🌌</h1>
-  </div>
-  <div class="mode-selector">
-    <label class="switch">
-      <input type="checkbox" id="modeToggle">
-      <span class="slider"></span>
-    </label>
   </div>
   <div class="content">
     <div class="grid-container">
@@ -180,7 +190,7 @@
         <p><button id="PowerButton" class="button">⚡️</button></p>
         <p class="state" id="PowerState">State: </p>
       </div>
-      
+
       <!-- Brightness -->
       <div class="card" id="BrightnessCard">
         <h2>Brightness</h2>
@@ -191,9 +201,16 @@
           <h2>☀️</h2>
           <input type="range" id="BrightnessRange" min="0" max="100" value="50">
         </div>
+        <!-- Brightness Mode Selector -->
+        <div class="mode-selector">
+          <label class="switch">
+            <input type="checkbox" id="brightnessModeToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
         <p class="state" id="BrightnessState">State: </p>
       </div>
-      
+
       <!-- Color -->
       <div class="card" id="ColourCard">
         <h2>Color</h2>
@@ -211,6 +228,13 @@
           <label class="label" for="WhiteSlider" style="color: #ffffff;">⚪</label>
           <input type="range" id="WhiteSlider" min="0" max="255" value="128">
         </div>
+        <!-- Color Mode Selector -->
+        <div class="mode-selector">
+          <label class="switch">
+            <input type="checkbox" id="colorModeToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
         <p class="state" id="ColourState">State: </p>
       </div>
 
@@ -224,75 +248,82 @@
           <h2>💫</h2>
           <input type="range" id="MotorSlider" min="0" max="100" value="50">
         </div>
+        <!-- Spin Mode Selector -->
+        <div class="mode-selector">
+          <label class="switch">
+            <input type="checkbox" id="spinModeToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
         <p class="state" id="MotorState">State: </p>
       </div>
 
       <!-- Add more cards here -->
     </div>
   </div>
-    <script>
-      var gateway = `ws://${window.location.hostname}/ws`;
-      var websocket;
-      var maxConnectionAttempts = 10;
-      var connectionAttempts = 0;
-      var statesDict = {
-        "Power": ['🌑', '🌓', '🌕'],
-        "Brightness": ['🌒', '🌓', '🌔', '🌕'],
-        "Colour": ['🔵', '🔴', '🟢', '⚪️', '🔵🔴', '🔵🟢', '🔴🟢', '🔴⚪️', '🟢⚪️', '🔴🟢🔵', '🔵🟢⚪️', '🔵🔴🟢⚪️', '🔄', '💗'],
-        "Motor": ['🛑', '🐇', '🐢']
-      };
-      window.addEventListener('load', onLoad);
-  
-      function initWebSocket() {
-        console.log('Trying to open a WebSocket connection...');
-        connectionAttempts++;
-        websocket = new WebSocket(gateway);
-        websocket.onopen    = onOpen;
-        websocket.onclose   = onClose;
-        websocket.onmessage = onMessage;
+  <script>
+    var gateway = `ws://${window.location.hostname}/ws`;
+    var websocket;
+    var maxConnectionAttempts = 10;
+    var connectionAttempts = 0;
+    var statesDict = {
+      "Power": ['🌑', '🌓', '🌕'],
+      "Brightness": ['🌒', '🌓', '🌔', '🌕'],
+      "Colour": ['🔵', '🔴', '🟢', '⚪️', '🔵🔴', '🔵🟢', '🔴🟢', '🔴⚪️', '🟢⚪️', '🔴🟢🔵', '🔵🟢⚪️', '🔵🔴🟢⚪️', '🔄', '💗'],
+      "Motor": ['🛑', '🐇', '🐢']
+    };
+    window.addEventListener('load', onLoad);
+
+    function initWebSocket() {
+      console.log('Trying to open a WebSocket connection...');
+      connectionAttempts++;
+      websocket = new WebSocket(gateway);
+      websocket.onopen = onOpen;
+      websocket.onclose = onClose;
+      websocket.onmessage = onMessage;
+    }
+
+    function onOpen(event) {
+      console.log('Connection opened');
+      connectionAttempts = 0;
+      // Update the state of the buttons with the data received from the server
+      sendMessage('getStates');
+    }
+
+    function onClose(event) {
+      console.log('Connection closed');
+      if (connectionAttempts < maxConnectionAttempts) {
+        setTimeout(initWebSocket, 2000);
       }
-  
-      function onOpen(event) {
-        console.log('Connection opened');
-        connectionAttempts = 0;
-        // Update the state of the buttons with the data received from the server
-        sendMessage('getStates');
+    }
+
+    function onMessage(event) {
+      console.log(`Received a message from server: ${event.data}`);
+      try {
+        var jsonData = JSON.parse(event.data);
+        updateStates(jsonData);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
       }
-  
-      function onClose(event) {
-        console.log('Connection closed');
-        if (connectionAttempts < maxConnectionAttempts) {
-          setTimeout(initWebSocket, 2000);
+    }
+
+    function updateStates(data) {
+      for (var key in data) {
+        var stateElement = document.getElementById(key + 'State');
+        if (stateElement) {
+          stateElement.textContent = 'State: ' + statesDict[key][data[key]];
         }
       }
-  
-      function onMessage(event) {
-        console.log(`Received a message from server: ${event.data}`);
-        try {
-          var jsonData = JSON.parse(event.data);
-          updateStates(jsonData);
-        } catch (error) {
-          console.error('Error parsing JSON:', error);
-        }
-      }
-  
-      function updateStates(data) {
-        for (var key in data) {
-          var stateElement = document.getElementById(key + 'State');
-          if (stateElement) {
-            stateElement.textContent = 'State: ' + statesDict[key][data[key]];
-          }
-        }
-      }
-  
-      function onLoad(event) {
-        initWebSocket();
-        initButtons();
-        initModeSelector();
-        initSliderListeners();
-      }
-  
-      function initButtons() {
+    }
+
+    function onLoad(event) {
+      initWebSocket();
+      initButtons();
+      initModeSelectors();
+      initSliderListeners();
+    }
+
+    function initButtons() {
       // Initialize the buttons with their respective ids and listeners
       addButtonListener("PowerButton", id.Power);
       addButtonListener("BrightnessButton", id.Brightness);
@@ -307,127 +338,150 @@
       });
     }
 
-      function initModeSelector() {
-        var modeToggle = document.getElementById('modeToggle');
-        modeToggle.addEventListener('change', function () {
-          var isChecked = modeToggle.checked;
+    function initModeSelectors() {
+      var brightnessModeToggle = document.getElementById('brightnessModeToggle');
 
-          // Toggle visibility of the containers (buttons and sliders) based on the mode-selector switch
-          var brightnessButtonsContainer = document.getElementById('BrightnessButtonsContainer');
-          var brightnessSlidersContainer = document.getElementById('BrightnessSlidersContainer');
-          var colorButtonsContainer = document.getElementById('ColourButtonsContainer');
-          var colorSlidersContainer = document.getElementById('ColourSlidersContainer');
-          var motorButtonsContainer = document.getElementById('MotorButtonsContainer');
-          var motorSliderContainer = document.getElementById('MotorSliderContainer');
+      brightnessModeToggle.addEventListener('change', function () {
+        var isBrightnessChecked = brightnessModeToggle.checked;
 
-          if (isChecked) {
-            // Switch to range sliders
-            brightnessButtonsContainer.style.display = 'none';
-            brightnessSlidersContainer.style.display = 'block';
+        var brightnessButtonsContainer = document.getElementById('BrightnessButtonsContainer');
+        var brightnessSlidersContainer = document.getElementById('BrightnessSlidersContainer');
 
-            colorButtonsContainer.style.display = 'none';
-            colorSlidersContainer.style.display = 'block';
-
-            motorButtonsContainer.style.display = 'none';
-            motorSliderContainer.style.display = 'block';
-          } else {
-            // Switch back to buttons
-            brightnessButtonsContainer.style.display = 'block';
-            brightnessSlidersContainer.style.display = 'none';
-
-            colorButtonsContainer.style.display = 'block';
-            colorSlidersContainer.style.display = 'none';
-
-            motorButtonsContainer.style.display = 'block';
-            motorSliderContainer.style.display = 'none';
-          }
-        });
-      }
-
-      // Function to initialize slider listeners
-      function initSliderListeners() {
-        // Get the Brightness slider element
-        var brightnessSlider = document.getElementById('BrightnessRange');
-
-        // Add an 'input' event listener to detect value changes
-        brightnessSlider.addEventListener('input', function () {
-          // Get the current value of the Brightness slider
-          var brightnessValue = brightnessSlider.value;
-
-          sendMessage(id.Brightness, modes.custom, brightnessValue);
-        });
-
-        // Get the Color sliders
-        var redSlider = document.getElementById('RedSlider');
-        var greenSlider = document.getElementById('GreenSlider');
-        var blueSlider = document.getElementById('BlueSlider');
-        var whiteSlider = document.getElementById('WhiteSlider');
-
-        // Add an 'input' event listener to detect value changes
-        redSlider.addEventListener('input', function () {
-          sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
-        });
-
-        greenSlider.addEventListener('input', function () {
-          sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
-        });
-
-        blueSlider.addEventListener('input', function () {
-          sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
-        });
-
-        whiteSlider.addEventListener('input', function () {
-          sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
-        });
-
-        // Get the Motor slider element
-        var motorSlider = document.getElementById('MotorSlider');
-
-        // Add an 'input' event listener to detect value changes
-        motorSlider.addEventListener('input', function () {
-          // Get the current value of the Motor slider
-          var motorValue = motorSlider.value;
-
-          sendMessage(id.Motor, modes.custom, motorValue);
-        });
-      }
-
-      function sendColourValues(red, green, blue, white) {
-        // String formatted array of color values
-        var colorValues = [red, green, blue, white];
-
-        // Send the updated color values to the WebSocket
-        sendMessage(id.Colour, modes.custom, colorValues)
-      }
-
-      function sendMessage(id, mode, value) {
-        // If there is no connection with the WebSocket, return
-        if (!websocket || websocket.readyState === 3) {
-          console.log('WebSocket connection not established, message ' + id + ' not sent');
-          return;
+        if (isBrightnessChecked) {
+          // Switch to range sliders
+          brightnessButtonsContainer.style.display = 'none';
+          brightnessSlidersContainer.style.display = 'block';
+        } else {
+          // Switch back to buttons
+          brightnessButtonsContainer.style.display = 'block';
+          brightnessSlidersContainer.style.display = 'none';
         }
-        // Build message in JSON format
-        var message = JSON.stringify({
-          'id': id,
-          'mode': mode,
-          'value': value
-        });
-        console.log('Sending: ' + message);
-        websocket.send(message); // Send the button's id as a message to the ESP
+      });
+
+      var colorModeToggle = document.getElementById('colorModeToggle');
+
+      colorModeToggle.addEventListener('change', function () {
+        var isColourChecked = colorModeToggle.checked;
+
+        var colorButtonsContainer = document.getElementById('ColourButtonsContainer');
+        var colorSlidersContainer = document.getElementById('ColourSlidersContainer');
+
+        if (isColourChecked) {
+          // Switch to range sliders
+          colorButtonsContainer.style.display = 'none';
+          colorSlidersContainer.style.display = 'block';
+        } else {
+          // Switch back to buttons
+          colorButtonsContainer.style.display = 'block';
+          colorSlidersContainer.style.display = 'none';
+        }
+      });
+
+      var spinModeToggle = document.getElementById('spinModeToggle');
+
+      spinModeToggle.addEventListener('change', function () {
+        var isSpinChecked = spinModeToggle.checked;
+
+        var motorButtonsContainer = document.getElementById('MotorButtonsContainer');
+        var motorSliderContainer = document.getElementById('MotorSliderContainer');
+
+        if (isSpinChecked) {
+          // Switch to range sliders
+          motorButtonsContainer.style.display = 'none';
+          motorSliderContainer.style.display = 'block';
+        } else {
+          // Switch back to buttons
+          motorButtonsContainer.style.display = 'block';
+          motorSliderContainer.style.display = 'none';
+        }
+      });
+    }
+
+    // Function to initialize slider listeners
+    function initSliderListeners() {
+      // Get the Brightness slider element
+      var brightnessSlider = document.getElementById('BrightnessRange');
+
+      // Add an 'input' event listener to detect value changes
+      brightnessSlider.addEventListener('input', function () {
+        // Get the current value of the Brightness slider
+        var brightnessValue = brightnessSlider.value;
+
+        sendMessage(id.Brightness, modes.custom, brightnessValue);
+      });
+
+      // Get the Color sliders
+      var redSlider = document.getElementById('RedSlider');
+      var greenSlider = document.getElementById('GreenSlider');
+      var blueSlider = document.getElementById('BlueSlider');
+      var whiteSlider = document.getElementById('WhiteSlider');
+
+      // Add an 'input' event listener to detect value changes
+      redSlider.addEventListener('input', function () {
+        sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
+      });
+
+      greenSlider.addEventListener('input', function () {
+        sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
+      });
+
+      blueSlider.addEventListener('input', function () {
+        sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
+      });
+
+      whiteSlider.addEventListener('input', function () {
+        sendColourValues(redSlider.value, greenSlider.value, blueSlider.value, whiteSlider.value);
+      });
+
+      // Get the Motor slider element
+      var motorSlider = document.getElementById('MotorSlider');
+
+      // Add an 'input' event listener to detect value changes
+      motorSlider.addEventListener('input', function () {
+        // Get the current value of the Motor slider
+        var motorValue = motorSlider.value;
+
+        sendMessage(id.Motor, modes.custom, motorValue);
+      });
+    }
+
+    function sendColourValues(red, green, blue, white) {
+      // String formatted array of color values
+      var colorValues = [red, green, blue, white];
+
+      // Send the updated color values to the WebSocket
+      sendMessage(id.Colour, modes.custom, colorValues)
+    }
+
+    function sendMessage(id, mode, value) {
+      // If there is no connection with the WebSocket, return
+      if (!websocket || websocket.readyState === 3) {
+        console.log('WebSocket connection not established, message ' + id + ' not sent');
+        return;
       }
+      // Build message in JSON format
+      var message = JSON.stringify({
+        'id': id,
+        'mode': mode,
+        'value': value
+      });
+      console.log('Sending: ' + message);
+      websocket.send(message); // Send the button's id as a message to the ESP
+    }
 
-      const id = {
-        'Power': 0,
-        'Brightness': 1,
-        'Colour': 2,
-        'Motor': 3
-      };
+    const id = {
+      'Power': 0,
+      'Brightness': 1,
+      'Colour': 2,
+      'Motor': 3
+    };
 
-      // Enum for modes
-      const modes = {
-        'set': 0,
-        'custom': 1
-      };
-    </script>
+    // Enum for modes
+    const modes = {
+      'set': 0,
+      'custom': 1
+    };
+  </script>
 </body>
+
 </html>
