@@ -211,9 +211,9 @@
         <p class="state" id="BrightnessState">State: </p>
       </div>
 
-      <!-- Color -->
+      <!-- Colour -->
       <div class="card" id="ColourCard">
-        <h2>Color</h2>
+        <h2>Colour</h2>
         <div id="ColourButtonsContainer">
           <p><button id="ColourButton" class="button">🌈</button></p>
         </div>
@@ -228,10 +228,10 @@
           <label class="label" for="WhiteSlider" style="color: #ffffff;">⚪</label>
           <input type="range" id="WhiteSlider" min="0" max="255" value="128">
         </div>
-        <!-- Color Mode Selector -->
+        <!-- Colour Mode Selector -->
         <div class="mode-selector">
           <label class="switch">
-            <input type="checkbox" id="colorModeToggle">
+            <input type="checkbox" id="colourModeToggle">
             <span class="slider"></span>
           </label>
         </div>
@@ -360,22 +360,22 @@
         }
       });
 
-      var colorModeToggle = document.getElementById('colorModeToggle');
+      var colourModeToggle = document.getElementById('colourModeToggle');
 
-      colorModeToggle.addEventListener('change', function () {
-        var isColourChecked = colorModeToggle.checked;
+      colourModeToggle.addEventListener('change', function () {
+        var isColourChecked = colourModeToggle.checked;
 
-        var colorButtonsContainer = document.getElementById('ColourButtonsContainer');
-        var colorSlidersContainer = document.getElementById('ColourSlidersContainer');
+        var colourButtonsContainer = document.getElementById('ColourButtonsContainer');
+        var colourSlidersContainer = document.getElementById('ColourSlidersContainer');
 
         if (isColourChecked) {
           // Switch to range sliders
-          colorButtonsContainer.style.display = 'none';
-          colorSlidersContainer.style.display = 'block';
+          colourButtonsContainer.style.display = 'none';
+          colourSlidersContainer.style.display = 'block';
         } else {
           // Switch back to buttons
-          colorButtonsContainer.style.display = 'block';
-          colorSlidersContainer.style.display = 'none';
+          colourButtonsContainer.style.display = 'block';
+          colourSlidersContainer.style.display = 'none';
         }
       });
 
@@ -412,7 +412,7 @@
         sendMessage(id.Brightness, modes.custom, brightnessValue);
       });
 
-      // Get the Color sliders
+      // Get the colour sliders
       var redSlider = document.getElementById('RedSlider');
       var greenSlider = document.getElementById('GreenSlider');
       var blueSlider = document.getElementById('BlueSlider');
@@ -448,11 +448,11 @@
     }
 
     function sendColourValues(red, green, blue, white) {
-      // String formatted array of color values
-      var colorValues = [red, green, blue, white];
+      // String formatted array of colour values
+      var colourValues = [red, green, blue, white];
 
-      // Send the updated color values to the WebSocket
-      sendMessage(id.Colour, modes.custom, colorValues)
+      // Send the updated colour values to the WebSocket
+      sendMessage(id.Colour, modes.custom, colourValues)
     }
 
     function sendMessage(id, mode, value) {
