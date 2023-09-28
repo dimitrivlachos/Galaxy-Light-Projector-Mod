@@ -81,16 +81,16 @@ const IPAddress SUBNET(255, 255, 255, 0);
 
 #pragma region Pin Definitions
 // Pin definitions for various components
-#define RED_LED 17            // Green wire
+#define RED_LED 19            // Green wire
 #define WHITE_LED 18          // Blue wire
-#define GREEN_LED 19          // White wire
+#define GREEN_LED 17          // White wire
 #define BLUE_LED 21           // Red wire
 #define PROJECTOR_LED 27      // Moon projector
 #define MOTOR_BJT 4           // Motor control
-#define MOTOR_SWITCH 32       // Motor switch
-#define BRIGHTNESS_SWITCH 33  // Brightness switch
-#define COLOUR_SWITCH 25      // Colour switch
-#define STATE_SWITCH 26       // State switch
+#define MOTOR_SWITCH 26       // Motor switch
+#define BRIGHTNESS_SWITCH 25  // Brightness switch
+#define COLOUR_SWITCH 33      // Colour switch
+#define STATE_SWITCH 32       // State switch
 #pragma endregion
 
 #pragma region State Definitions
