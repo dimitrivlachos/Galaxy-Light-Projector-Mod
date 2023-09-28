@@ -13,25 +13,22 @@
  */
 class GenericFSM {
 public:
-    GenericFSM();
-    GenericFSM(State initialState, std::function<void()> onStateChangeCallback, State* customState);
+    bool custom = false;
+    String id;
+    GenericFSM(String id, void (*onStateChangeCallback)());
     void addState(State state);
     void nextState();
-    void setState(State newState);
     State getCurrentState() const;
     int getCurrentStateIndex() const;
-    void setStateAction(State state, std::function<void()> action);
     void performStateAction();
-    void setCustomState(State* customState);
+    void setCustomState(State customState);
     void useCustomState();
 
 private:
-    bool custom = false;
     State currentState;
-    State* customState;
+    State customState;
     std::vector<State> iterativeStates;
-    std::function<void()> onStateChangeCallback;
-    void initCustomState(State* customState);
+    void (*onStateChangeCallback)();
     void onStateChange();
-    int getStateIndex(State state) const;
+    int getStateIndex(const State &state) const;
 };

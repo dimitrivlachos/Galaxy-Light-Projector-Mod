@@ -194,7 +194,7 @@
       <!-- Brightness -->
       <div class="card" id="BrightnessCard">
         <h2>Brightness</h2>
-        <div id="BrightnessButtonsContainer">
+        <div id="BrightnessButtonsContainer" style="display: block;">
           <p><button id="BrightnessButton" class="button">☀️</button></p>
         </div>
         <div id="BrightnessSlidersContainer" style="display: none;">
@@ -214,7 +214,7 @@
       <!-- Colour -->
       <div class="card" id="ColourCard">
         <h2>Colour</h2>
-        <div id="ColourButtonsContainer">
+        <div id="ColourButtonsContainer" style="display: block;">
           <p><button id="ColourButton" class="button">🌈</button></p>
         </div>
         <div id="ColourSlidersContainer" style="display: none;">
@@ -241,10 +241,10 @@
       <!-- Motor -->
       <div class="card" id="MotorCard">
         <h2>Spin</h2>
-        <div id="MotorButtonsContainer">
+        <div id="MotorButtonsContainer" style="display: block;">
           <p><button id="MotorButton" class="button">💫</button></p>
         </div>
-        <div id="MotorSliderContainer" style="display: none;">
+        <div id="MotorSlidersContainer" style="display: none;">
           <h2>💫</h2>
           <input type="range" id="MotorSlider" min="0" max="100" value="50">
         </div>
@@ -287,7 +287,7 @@
       console.log('Connection opened');
       connectionAttempts = 0;
       // Update the state of the buttons with the data received from the server
-      sendMessage('getStates');
+      websocket.send('getStates');
     }
 
     function onClose(event) {
@@ -310,12 +310,95 @@
     }
 
     function updateStates(data) {
-      for (var key in data) {
-        var stateElement = document.getElementById(key + 'State');
-        if (stateElement) {
-          stateElement.textContent = 'State: ' + statesDict[key][data[key]];
-        }
+      // Data example:
+      /* 
+      {
+        "Power":{"mode":"0","value":"2"},
+        "Brightness":{"mode":"0","value":"2"},
+        "Colour":{"mode":"0","value":"0"},
+        "Motor":{"mode":"0","value":"0"}
       }
+      */
+      var Power = data['Power'];
+      var Pmode = parseInt(Power['mode']);
+      var Pvalue = parseInt(Power['value']);
+      setModeState('Power', Pmode);
+      var PowerState = document.getElementById('PowerState');
+      if (Pmode == 0) {
+        PowerState.textContent = 'State: ' + statesDict['Power'][Pvalue];
+      } else {
+        PowerState.textContent = 'State: ' + Pvalue;
+      }
+
+      var Brightness = data['Brightness'];
+      var Bmode = parseInt(Brightness['mode']);
+      var Bvalue = parseInt(Brightness['value']);
+      setModeState('Brightness', Bmode);
+      var BrightnessState = document.getElementById('BrightnessState');
+      if (Bmode == 0) {
+        BrightnessState.textContent = 'State: ' + statesDict['Brightness'][Bvalue];
+      } else {
+        BrightnessState.textContent = 'State: ' + Bvalue;
+        // Set the brightness slider to the value received from the server
+        var brightnessSlider = document.getElementById('BrightnessRange');
+        brightnessSlider.value = Bvalue;
+      }
+
+      var Colour = data['Colour'];
+      var Cmode = parseInt(Colour['mode']);
+      var Cvalue = Colour['value'];
+      setModeState('Colour', Cmode);
+      var ColourState = document.getElementById('ColourState');
+      if (Cmode == 0) {
+        ColourState.textContent = 'State: ' + statesDict['Colour'][Cvalue];
+      } else {
+        ColourState.textContent = 'State: ' + Cvalue;
+        // Set the colour sliders to the values received from the server
+        var redSlider = document.getElementById('RedSlider');
+        var greenSlider = document.getElementById('GreenSlider');
+        var blueSlider = document.getElementById('BlueSlider');
+        var whiteSlider = document.getElementById('WhiteSlider');
+        redSlider.value = Cvalue[0];
+        greenSlider.value = Cvalue[1];
+        blueSlider.value = Cvalue[2];
+        whiteSlider.value = Cvalue[3];
+      }
+
+      var Motor = data['Motor'];
+      var Mmode = parseInt(Motor['mode']);
+      var Mvalue = parseInt(Motor['value']);
+      setModeState('Motor', Mmode);
+      var MotorState = document.getElementById('MotorState');
+      if (Mmode == 0) {
+        MotorState.textContent = 'State: ' + statesDict['Motor'][Mvalue];
+      } else {
+        MotorState.textContent = 'State: ' + Mvalue;
+        // Set the motor slider to the value received from the server
+        var motorSlider = document.getElementById('MotorSlider');
+        motorSlider.value = Mvalue;
+      }
+    }
+
+    function setBrightnessSliderValue(value) {
+      var brightnessSlider = document.getElementById('BrightnessRange');
+      brightnessSlider.value = value;
+    }
+
+    function setColourSliderValues(values) {
+      var redSlider = document.getElementById('RedSlider');
+      var greenSlider = document.getElementById('GreenSlider');
+      var blueSlider = document.getElementById('BlueSlider');
+      var whiteSlider = document.getElementById('WhiteSlider');
+
+      redSlider.value = values[0];
+      greenSlider.value = values[1];
+      blueSlider.value = values[2];
+      whiteSlider.value = values[3];
+    }
+
+    function setMotorSliderValue(value) {
+      var motorSlider = document.getElementById('MotorSlider');
+      motorSlider.value = value;
     }
 
     function onLoad(event) {
@@ -327,10 +410,10 @@
 
     function initButtons() {
       // Initialize the buttons with their respective ids and listeners
-      addButtonListener("PowerButton", id.Power);
-      addButtonListener("BrightnessButton", id.Brightness);
-      addButtonListener("ColourButton", id.Colour);
-      addButtonListener("MotorButton", id.Motor);
+      addButtonListener("PowerButton", "Power");
+      addButtonListener("BrightnessButton", "Brightness");
+      addButtonListener("ColourButton", "Colour");
+      addButtonListener("MotorButton", "Motor");
     }
 
     function addButtonListener(buttonId, messageId) {
@@ -345,58 +428,39 @@
 
       brightnessModeToggle.addEventListener('change', function () {
         var isBrightnessChecked = brightnessModeToggle.checked;
-
-        var brightnessButtonsContainer = document.getElementById('BrightnessButtonsContainer');
-        var brightnessSlidersContainer = document.getElementById('BrightnessSlidersContainer');
-
-        if (isBrightnessChecked) {
-          // Switch to range sliders
-          brightnessButtonsContainer.style.display = 'none';
-          brightnessSlidersContainer.style.display = 'block';
-        } else {
-          // Switch back to buttons
-          brightnessButtonsContainer.style.display = 'block';
-          brightnessSlidersContainer.style.display = 'none';
-        }
+        setModeState('Brightness', isBrightnessChecked);
       });
 
       var colourModeToggle = document.getElementById('colourModeToggle');
 
       colourModeToggle.addEventListener('change', function () {
         var isColourChecked = colourModeToggle.checked;
-
-        var colourButtonsContainer = document.getElementById('ColourButtonsContainer');
-        var colourSlidersContainer = document.getElementById('ColourSlidersContainer');
-
-        if (isColourChecked) {
-          // Switch to range sliders
-          colourButtonsContainer.style.display = 'none';
-          colourSlidersContainer.style.display = 'block';
-        } else {
-          // Switch back to buttons
-          colourButtonsContainer.style.display = 'block';
-          colourSlidersContainer.style.display = 'none';
-        }
+        setModeState('Colour', isColourChecked);
       });
 
       var spinModeToggle = document.getElementById('spinModeToggle');
 
       spinModeToggle.addEventListener('change', function () {
         var isSpinChecked = spinModeToggle.checked;
-
-        var motorButtonsContainer = document.getElementById('MotorButtonsContainer');
-        var motorSliderContainer = document.getElementById('MotorSliderContainer');
-
-        if (isSpinChecked) {
-          // Switch to range sliders
-          motorButtonsContainer.style.display = 'none';
-          motorSliderContainer.style.display = 'block';
-        } else {
-          // Switch back to buttons
-          motorButtonsContainer.style.display = 'block';
-          motorSliderContainer.style.display = 'none';
-        }
+        setModeState('Motor', isSpinChecked);
       });
+    }
+
+    function setModeState(cardId, mode) {
+      if (cardId == 'Power') return; // Power card has no mode selector
+
+      var ButtonsContainer = document.getElementById(cardId + 'ButtonsContainer');
+      var SlidersContainer = document.getElementById(cardId + 'SlidersContainer');
+
+      if (mode) {
+        // Switch to range sliders
+        ButtonsContainer.style.display = 'none';
+        SlidersContainer.style.display = 'block';
+      } else {
+        // Switch back to buttons
+        ButtonsContainer.style.display = 'block';
+        SlidersContainer.style.display = 'none';
+      }
     }
 
     // Function to initialize slider listeners
@@ -409,7 +473,7 @@
         // Get the current value of the Brightness slider
         var brightnessValue = brightnessSlider.value;
 
-        sendMessage(id.Brightness, modes.custom, brightnessValue);
+        sendMessage("Brightness", modes.custom, brightnessValue);
       });
 
       // Get the colour sliders
@@ -443,7 +507,7 @@
         // Get the current value of the Motor slider
         var motorValue = motorSlider.value;
 
-        sendMessage(id.Motor, modes.custom, motorValue);
+        sendMessage("Motor", modes.custom, motorValue);
       });
     }
 
@@ -452,23 +516,29 @@
       var colourValues = [red, green, blue, white];
 
       // Send the updated colour values to the WebSocket
-      sendMessage(id.Colour, modes.custom, colourValues)
+      sendMessage("Colour", modes.custom, colourValues.join(''))
     }
 
+    const RateLimit = 500; // ms
+    var lastMessageTime = 0;
+
     function sendMessage(id, mode, value) {
+      if (lastMessageTime && (Date.now() - lastMessageTime < RateLimit)) {
+        return;
+      }
+
       // If there is no connection with the WebSocket, return
       if (!websocket || websocket.readyState === 3) {
         console.log('WebSocket connection not established, message ' + id + ' not sent');
         return;
       }
-      // Build message in JSON format
-      var message = JSON.stringify({
-        'id': id,
-        'mode': mode,
-        'value': value
-      });
+
+      // Build the json as a string instead
+      var message = "{\"id\":\"" + id + "\",\"mode\":\"" + mode + "\",\"value\":\"" + value + "\"}";
+
       console.log('Sending: ' + message);
       websocket.send(message); // Send the button's id as a message to the ESP
+      lastMessageTime = Date.now();
     }
 
     const id = {
