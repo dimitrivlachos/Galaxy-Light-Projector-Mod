@@ -23,18 +23,18 @@ Modification of a consumer night-light projector, converting it into a smart dev
     <td><img src="PCB/Examples/Back.png"></td>
  </table>
 
- ### Fabrication Render (Rev. 1.0)
+ ### Fabrication Render (Rev. 1.1)
   <table>
     <tr>
       <td>Front</td>
     </tr>
-      <td><img src="PCB/Examples/FabFront.png"></td>
+      <td><img src="PCB/Examples/FabFront.jpg"></td>
     </tr>
     <tr>
       <td>Back</td>
     </tr>
     <tr>
-      <td><img src="PCB/Examples/FabBack.png"></td>
+      <td><img src="PCB/Examples/FabBack.jpg"></td>
     </table>
 
 ### Printed Circuit Board (Rev. 1.0)
